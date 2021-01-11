@@ -17,15 +17,21 @@
     </div>
     <!-- tab操作 -->
     <div class="tabs flex-row">
-      <div class="tabs-item flex-col" v-for="item in 3" :key="item">
-        <van-image
-          round
-          width="1.4375rem"
-          height="1.4375rem"
-          src="https://img.yzcdn.cn/vant/cat.jpeg"
-        />
-        <span>发圈素材</span>
-      </div>
+      <router-link
+        :to="item.link"
+        v-for="(item, index) in tabList"
+        :key="index"
+      >
+        <div class="tabs-item flex-col">
+          <van-image
+            round
+            width="1.4375rem"
+            height="1.4375rem"
+            :src="item.src"
+          />
+          <span>{{ item.name }}</span>
+        </div></router-link
+      >
     </div>
     <!-- 邀请信息与团队 -->
     <div class="invate-team">
@@ -88,9 +94,31 @@
 </template>
 
 <script>
-import ShareMask from '../../components/share-mask.vue'
+import ShareMask from "../../components/share-mask.vue";
 export default {
-    components: {ShareMask}
+  name: "index",
+  components: { ShareMask },
+  data() {
+    return {
+      tabList: [
+        {
+          src: require("../../assets/images/index/material.png"),
+          name: "发圈素材",
+          link: "",
+        },
+        {
+          src: require("../../assets/images/index/coupon.png"),
+          name: "助力券",
+          link: "",
+        },
+        {
+          src: require("../../assets/images/index/settings.png"),
+          name: "设置",
+          link: "/setting",
+        },
+      ],
+    };
+  },
 };
 </script>
 
@@ -101,8 +129,8 @@ export default {
   background-color: #f3f6fb;
   padding: 0.4375rem 1.25rem 6.5rem;
   color: #222;
-//   height: 100%;
-//   overflow-y: auto;
+  //   height: 100%;
+  //   overflow-y: auto;
   padding-bottom: 4rem;
   .head {
     padding-top: 1.25rem;
@@ -140,6 +168,7 @@ export default {
       align-items: center;
       span {
         margin-top: 0.25rem;
+        color: #fff;
       }
     }
   }
