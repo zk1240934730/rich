@@ -104,7 +104,7 @@ export default {
         {
           src: require("../../assets/images/index/material.png"),
           name: "发圈素材",
-          link: "",
+          link: "/spread",
         },
         {
           src: require("../../assets/images/index/coupon.png"),

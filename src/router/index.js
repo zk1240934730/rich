@@ -12,7 +12,7 @@ const routes = [
   },
   {
     path: '/login',
-    name: 'index',
+    name: 'login',
     component: () => import(/* webpackChunkName: "about" */ '../views/login/index.vue')
   },
   {
@@ -24,6 +24,21 @@ const routes = [
     path: '/setting',
     name: 'setting',
     component: () => import(/* webpackChunkName: "about" */ '../views/setting/index.vue')
+  },
+  {
+    path: '/editWxNum',
+    name: 'editWxNum',
+    component: () => import(/* webpackChunkName: "about" */ '../views/setting/editWxNum.vue')
+  },
+  {
+    path: '/wxTip',
+    name: 'wxTip',
+    component: () => import(/* webpackChunkName: "about" */ '../views/setting/wxTip.vue')
+  },
+  {
+    path: '/spread',
+    name: 'spread',
+    component: () => import(/* webpackChunkName: "about" */ '../views/spread/index.vue')
   }
 ]
 
