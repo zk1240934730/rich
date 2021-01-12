@@ -24,6 +24,11 @@ const routes = [
     path: '/setting',
     name: 'setting',
     component: () => import(/* webpackChunkName: "about" */ '../views/setting/index.vue')
+  },
+  {
+    path: '/editWxNum',
+    name: 'editWxNum',
+    component: () => import(/* webpackChunkName: "about" */ '../views/setting/editWxNum.vue')
   }
 ]
 
