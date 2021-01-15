@@ -1,8 +1,7 @@
 <template>
-  <div id="invite-users">
+  <div id="order-list">
     <div data-v-4bdd4575="" class="tabs">
       <div data-v-4bdd4575="" class="tab-item active">全部</div>
-      <div data-v-4bdd4575="" class="tab-item">待申请</div>
       <div data-v-4bdd4575="" class="tab-item">待借款</div>
       <div data-v-4bdd4575="" class="tab-item">已借款</div>
       <div data-v-4bdd4575="" class="tab-item">无效用户</div>
@@ -11,7 +10,7 @@
       <div class="tips">
         <div class="tips-title flex-row">
           <span>温馨提示</span>
-          <router-link to="/orderList"><span>查看订单</span></router-link>
+          <router-link to="/orderList"><span>详细规则</span></router-link>
         </div>
         <div class="remind">
           未获得有钱花额度的用户，可申请其他产品，您可查看订单查看对应奖励。
@@ -56,7 +55,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#invite-users {
+#order-list {
   background: url(../../assets/images/invite/bg.png) no-repeat;
   background-color: #f3f6fb;
   background-size: 100%;
@@ -70,10 +69,10 @@ export default {
     justify-content: space-between;
     color: #5a6981;
     flex-shrink: 0;
-    padding: 0 0.625rem;
+    padding: 0 1.6875rem;
     .tab-item {
       padding-top: 2.0625rem;
-      font-size: 0.8125rem;
+      font-size: 1rem;
       height: 100%;
       text-align: center;
       &.active {

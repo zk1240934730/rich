@@ -13,37 +13,47 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import(/* webpackChunkName: "about" */ '../views/login/index.vue')
+    component: () => import(/* webpackChunkName: "login" */ '../views/login/index.vue')
   },
   {
     path: '/index',
     name: 'index',
-    component: () => import(/* webpackChunkName: "about" */ '../views/index/index.vue')
+    component: () => import(/* webpackChunkName: "index" */ '../views/index/index.vue')
   },
   {
     path: '/setting',
     name: 'setting',
-    component: () => import(/* webpackChunkName: "about" */ '../views/setting/index.vue')
+    component: () => import(/* webpackChunkName: "setting" */ '../views/setting/index.vue')
   },
   {
     path: '/editWxNum',
     name: 'editWxNum',
-    component: () => import(/* webpackChunkName: "about" */ '../views/setting/editWxNum.vue')
+    component: () => import(/* webpackChunkName: "editWxNum" */ '../views/setting/editWxNum.vue')
   },
   {
     path: '/wxTip',
     name: 'wxTip',
-    component: () => import(/* webpackChunkName: "about" */ '../views/setting/wxTip.vue')
+    component: () => import(/* webpackChunkName: "wxTip" */ '../views/setting/wxTip.vue')
   },
   {
     path: '/spread',
     name: 'spread',
-    component: () => import(/* webpackChunkName: "about" */ '../views/spread/index.vue')
+    component: () => import(/* webpackChunkName: "spread" */ '../views/spread/index.vue')
   },
   {
     path: '/inviteUsers',
     name: 'inviteUsers',
-    component: () => import(/* webpackChunkName: "about" */ '../views/inviteUsers/index.vue')
+    component: () => import(/* webpackChunkName: "inviteUsers" */ '../views/inviteUsers/index.vue')
+  },
+  {
+    path: '/orderList',
+    name: 'orderList',
+    component: () => import(/* webpackChunkName: "orderList" */ '../views/inviteUsers/orderList.vue')
+  },
+  {
+    path: '/team',
+    name: 'team',
+    component: () => import(/* webpackChunkName: "team" */ '../views/team/index.vue')
   }
 ]
 

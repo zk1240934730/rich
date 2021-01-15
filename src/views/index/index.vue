@@ -41,10 +41,12 @@
           <p class="message">0</p>
         </div>
       </router-link>
-      <div class="invate-team-card">
-        <p class="title">合伙人团队(人)</p>
-        <p class="message">0</p>
-      </div>
+      <router-link to="/team">
+        <div class="invate-team-card">
+          <p class="title">合伙人团队(人)</p>
+          <p class="message">0</p>
+        </div>
+      </router-link>
     </div>
     <!-- 累计信息 -->
     <div class="profit">
