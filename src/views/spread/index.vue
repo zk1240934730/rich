@@ -32,44 +32,66 @@
               :key="item"
             />
           </div>
-          <div class="clipboard-btn">复制文案</div> 
+          <div class="clipboard-btn">复制文案</div>
         </div>
       </list>
+    </div>
+    <van-image-preview v-model="show" :images="images" @change="onChange">
+      <!-- <template v-slot:index>第{{ index }}页</template> -->
+    </van-image-preview>
+    <div class="content-wrapper" v-if="show">
+      <div data-v-c9a09132="" class="content">
+        <p>又一波放款佣金图来啦😜</p>
+        <p>🌹6分钟佣金到账😉</p>
+        <p>放款40000元🚀🚀</p>
+        <p>💪直推收益1000元</p>
+        <p>❤️赶快推起来，越推越有钱~</p>
+      </div>
+      <div data-v-c9a09132="" class="clipboard-btn">复制文案</div>
     </div>
   </div>
 </template>
 
 <script>
-import { List } from "vant";
+import { List, ImagePreview } from "vant";
+console.log(ImagePreview.Component.name);
 export default {
   name: "spread",
   components: {
     List,
+    [ImagePreview.Component.name]: ImagePreview.Component,
   },
   data() {
     return {
       list: [],
       loading: false,
       finished: false,
+      show: true,
+      index: 0,
+      images: [
+        "https://img.yzcdn.cn/vant/apple-1.jpg",
+        "https://img.yzcdn.cn/vant/apple-2.jpg",
+      ],
     };
   },
   methods: {
+    onChange(index) {
+      this.index = index;
+    },
     onLoad() {
       // 异步更新数据
       // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.list.push(this.list.length + 1);
-        }
-
-        // 加载状态结束
-        this.loading = false;
-
-        // 数据全部加载完成
-        if (this.list.length >= 40) {
-          this.finished = true;
-        }
-      }, 1000);
+      // setTimeout(() => {
+      //   for (let i = 0; i < 10; i++) {
+      //     this.list.push(this.list.length + 1);
+      //   }
+      //   // 加载状态结束
+      //   this.loading = false;
+      //   // 数据全部加载完成
+      //   if (this.list.length >= 40) {
+      //     this.finished = true;
+      //   }
+      // }, 1000);
     },
   },
 };
@@ -156,19 +178,47 @@ export default {
         }
       }
       .clipboard-btn {
-        margin-top: .9375rem;
+        margin-top: 0.9375rem;
         width: 6.5625rem;
-    height: 2.125rem;
-    border: 1px solid #fa5050;
-    border-radius: 1.0625rem;
-    font-size: .8125rem;
-    color: #fa5050;
-    text-align: center;
-    line-height: 2.125rem;
-    font-weight: 700;
-
+        height: 2.125rem;
+        border: 1px solid #fa5050;
+        border-radius: 1.0625rem;
+        font-size: 0.8125rem;
+        color: #fa5050;
+        text-align: center;
+        line-height: 2.125rem;
+        font-weight: 700;
       }
     }
   }
+}
+.content-wrapper {
+  width: 100%;
+  padding: 1.25rem 0.9375rem 1.25rem;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%);
+  z-index: 2005;
+  background: rgba(46, 46, 46, 0.8);
+  .content {
+    font-size: 0.875rem;
+    line-height: 1.5625rem;
+    color: #fff;
+    margin-bottom: 1.25rem;
+    text-align: left;
+    width: 100%;
+    
+  }
+  .clipboard-btn {
+      height: 3.125rem;
+      background: #fa5050;
+      border-radius: 6.25rem;
+      font-size: 1rem;
+      color: #fff;
+      text-align: center;
+      line-height: 3.125rem;
+      font-weight: 700;
+    }
 }
 </style>

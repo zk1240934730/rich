@@ -35,12 +35,14 @@
     </div>
     <!-- 邀请信息与团队 -->
     <div class="invate-team">
+      <router-link to="/inviteUsers">
+        <div class="invate-team-card">
+          <p class="title">邀请用户(人)</p>
+          <p class="message">0</p>
+        </div>
+      </router-link>
       <div class="invate-team-card">
-        <p class="title">邀请用户(人)</p>
-        <p class="message">0</p>
-      </div>
-      <div class="invate-team-card">
-        <p class="title">邀请用户(人)</p>
+        <p class="title">合伙人团队(人)</p>
         <p class="message">0</p>
       </div>
     </div>
@@ -186,6 +188,7 @@ export default {
       height: 4.75rem;
       padding: 1.25rem 1.25rem 0;
       position: relative;
+      color: #222;
       &:after {
         content: "";
         position: absolute;
