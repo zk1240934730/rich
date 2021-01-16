@@ -36,7 +36,7 @@
         复制链接
       </div>
       <div class="my-code flex-row">
-        <span>我的邀请码：adzfefttmqwkno </span>
+        <div>我的邀请码：adzfefttmqwkno </div>
         <div class="my-code-clipboard"></div>
       </div>
     </div>
@@ -130,7 +130,7 @@ export default {
   font-size: 0.8125rem;
   text-align: center;
   color: #fff !important;
-  margin: 1.875rem auto -0.3125rem;
+  margin: 1.875rem auto 0.3125rem;
 }
 .my-code {
   margin-top: 0.3125rem;
@@ -146,8 +146,6 @@ export default {
     height: 1.4375rem;
     background: url(../assets/images/components/copy_btn.png) no-repeat 50% /
       contain;
-    position: relative;
-    top: 0.3125rem;
     margin-left: 0.2rem;
   }
 }

@@ -16,21 +16,23 @@
         <div class="remind">
           未获得有钱花额度的用户，可申请其他产品，您可查看订单查看对应奖励。
         </div>
-        <div class="error-tip">由于用户不符合奖励规则，您无法获得邀请奖励。</div>
+        <div class="error-tip">
+          由于用户不符合奖励规则，您无法获得邀请奖励。
+        </div>
       </div>
       <list
         v-model="loading"
         :finished="finished"
         @load="onLoad"
-        style="flex: 1;overflow-y: auto"
-    >
+        style="flex: 1; overflow-y: auto"
+      >
         <div class="no-data">
-            <img src="../../assets/images/noData.png" alt="">
-            <p>没有用户记录</p>
-            <p>立即推广，得现金奖励</p>
-            <van-button type="danger" round>信贷服务推广</van-button>
+          <img src="../../assets/images/noData.png" alt="" />
+          <p>没有用户记录</p>
+          <p>立即推广，得现金奖励</p>
+          <van-button type="danger" round>信贷服务推广</van-button>
         </div>
-    </list>
+      </list>
     </div>
   </div>
 </template>
@@ -45,13 +47,13 @@ export default {
   },
   data() {
     return {
-        loading: false,
-        finished: true
-    }
+      loading: false,
+      finished: true,
+    };
   },
   methods: {
-      onLoad() {}
-  }
+    onLoad() {},
+  },
 };
 </script>
 
@@ -138,11 +140,11 @@ export default {
       }
     }
     .remind {
-        margin-top: .3125rem;
+      margin-top: 0.3125rem;
     }
     .error-tip {
-        font-size: .75rem;
-        color: #fa5050;
+      font-size: 0.75rem;
+      color: #fa5050;
     }
   }
   .no-data {
@@ -150,14 +152,14 @@ export default {
     flex-direction: column;
     width: 100%;
     img {
-      margin: 3.75rem auto .1875rem;
+      margin: 3.75rem auto 0.1875rem;
       width: 5.5rem;
       height: 5.5rem;
     }
     p {
-          text-align: center;
+      text-align: center;
       font-family: PingFangSC-Regular;
-      font-size: .8125rem;
+      font-size: 0.8125rem;
       color: #868e9e;
       line-height: 1.25rem;
     }
@@ -165,9 +167,9 @@ export default {
       margin: 1.875rem auto 0;
       width: 18.4375rem;
       font-size: 1rem;
-    color: #fff;
-    font-weight: 700;
-    background: #fa5050;
+      color: #fff;
+      font-weight: 700;
+      background: #fa5050;
     }
   }
 }

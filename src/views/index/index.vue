@@ -54,7 +54,7 @@
         <p class="top-title">累计收入(元)</p>
         <p class="top-center flex-row">
           <span class="top-total-money">0.00</span>
-          <span>详情</span>
+          <router-link to="/records"><span class="top-total-detail">详情</span></router-link>
         </p>
         <p class="top-income flex-row">
           <span>可提现<span class="num">0.00</span>元</span>
@@ -67,7 +67,7 @@
             <span>本月团队等级</span>
             <div class="bage-level"><span>等级一</span></div>
           </div>
-          <span class="detail">详情</span>
+          <router-link to="/teamLevel"><span class="detail">详情</span></router-link>
         </div>
         <div class="month">1月总业绩(元)<span>0.00</span></div>
         <div class="rest">还差<span>10,000.00</span>元可提升至下一等级</div>
@@ -243,17 +243,22 @@ export default {
         margin-top: 0.28125rem;
         align-items: center;
         justify-content: space-between;
+        
         width: 100%;
         .top-total-money {
           font-family: FDCfont-Bold;
           font-weight: 700;
           font-size: 1.875rem;
         }
-        > span:last-child::after {
+        span {
+          color: #fff;
+        }
+        .top-total-detail:last-child::after {
           content: "";
           display: inline-block;
           width: 0;
           height: 0;
+          
           border-top: 0.25rem solid rgba(0, 0, 0, 0);
           border-bottom: 0.25rem solid rgba(0, 0, 0, 0);
           border-left: 0.3125rem solid #ffeaea;

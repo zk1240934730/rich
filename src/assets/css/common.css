@@ -104,7 +104,18 @@ img {
   display: flex;
   flex-direction: column;
 }
-
+.flex-row-between {
+  justify-content: space-between;
+}
+.flex-row-around {
+  justify-content: space-around;
+}
+.flex-row-center {
+  justify-content: center;
+}
+.flex-col-center {
+  align-items: center;
+}
 .f1 {
   flex: 1;
 }

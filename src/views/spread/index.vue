@@ -54,7 +54,7 @@
 
 <script>
 import { List, ImagePreview } from "vant";
-console.log(ImagePreview.Component.name);
+
 export default {
   name: "spread",
   components: {

@@ -46,6 +46,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "inviteUsers" */ '../views/inviteUsers/index.vue')
   },
   {
+    path: '/records',
+    name: 'records',
+    component: () => import(/* webpackChunkName: "records" */ '../views/inviteUsers/records.vue')
+  },
+  {
     path: '/orderList',
     name: 'orderList',
     component: () => import(/* webpackChunkName: "orderList" */ '../views/inviteUsers/orderList.vue')
@@ -54,6 +59,11 @@ const routes = [
     path: '/team',
     name: 'team',
     component: () => import(/* webpackChunkName: "team" */ '../views/team/index.vue')
+  },
+  {
+    path: '/teamLevel',
+    name: 'teamLevel',
+    component: () => import(/* webpackChunkName: "team" */ '../views/team/teamLevel.vue')
   }
 ]
 
