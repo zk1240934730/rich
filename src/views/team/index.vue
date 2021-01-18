@@ -150,7 +150,7 @@ export default {
   .team-info {
     padding: 1.25rem;
     width: 20.9375rem;
-    height: 7.4375rem;
+    height: 7.2375rem;
     border-radius: 0.5rem 0.5rem 0 0;
     background: url(../../assets/images/team/team_bg.png) 50% no-repeat;
     background-size: 100%;
