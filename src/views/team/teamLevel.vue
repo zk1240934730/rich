@@ -1,5 +1,6 @@
 <template>
   <div id="team-level">
+      <div class="level-month"></div>
   </div>
 </template>
 
