@@ -1,14 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Index from '../views/index/index.vue';
-
+import store from '../store/index'
+import NProgress from 'nprogress' //进度条
+import 'nprogress/nprogress.css'
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
     name: 'index',
-    component: Index
+    component: import(/* webpackChunkName: "login" */ '../views/index/index.vue')
   },
   {
     path: '/login',
@@ -70,5 +71,24 @@ const routes = [
 const router = new VueRouter({
   routes
 })
+//判断是否存在token
+router.beforeEach((to, from, next) => {
+  NProgress.start()
+  if (to.path !== '/login' && !store.state.token) {
+      // next('/login')
+      NProgress.done() // 结束Progress
+  } else {
+      next();
+  }
+  // if (to.meta.roles) {
+  //     to.meta.roles.includes(...store.getters.roles) ? next() : next('/404')
+  // } else {
+  //     next();
+  // }
+  next();
+})
 
+router.afterEach(() => {
+  NProgress.done() // 结束Progress
+})
 export default router

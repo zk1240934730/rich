@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import { Button, Popup, Image, Swipe, SwipeItem, Icon, Overlay, Toast, Cell} from 'vant'
+import {get, post} from './api/request'
 import 'lib-flexible'
 import clipboard from 'clipboard';
 
@@ -17,6 +18,8 @@ Vue.use(Toast);
 Vue.use(Cell);
 Vue.config.productionTip = false
 Vue.prototype.clipboard = clipboard
+Vue.prototype.$get = get
+Vue.prototype.$post = post
 
 new Vue({
   router,

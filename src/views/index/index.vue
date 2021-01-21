@@ -123,6 +123,9 @@ export default {
       ],
     };
   },
+  mounted() {
+    console.log(this.$get)
+  }
 };
 </script>
 

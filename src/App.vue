@@ -10,7 +10,10 @@ export default {
 
     }
   },
-  components: { }
+  components: { },
+  mounted() {
+    console.log(this.$get("/api/class_homework/v2StudentList"))
+  }
 }
 </script>
 <style lang="scss">

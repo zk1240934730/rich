@@ -18,7 +18,7 @@
             </div>
             <div class="password">
               <input class="f6" type="password" placeholder="请输入验证码" />
-              <span class="f4">获取验证码</span>
+              <span class="f4" @click="getCode"> {{countDown == 61 ? '获取验证码' : countDown + 's'}}</span>
             </div>
             <button class="submit-btn">免费注册/登录</button>
           </form>
@@ -42,8 +42,24 @@ export default {
   data() {
     return {
       show: false,
+      countDown: 61,
+      countDownInterval: null
     };
   },
+  methods: {
+    // 获取验证码
+    getCode() {
+      if(this.countDown != 61) return;
+      this.countDown --;
+      this.countDownInterval = setInterval(() => {
+        this.countDown --;
+        if(this.countDown <= 0) {
+          clearInterval(this.countDownInterval);
+          this.countDown = 61;
+        }
+      }, 1000)
+    }
+  }
 };
 </script>
 
