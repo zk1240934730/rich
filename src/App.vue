@@ -12,7 +12,7 @@ export default {
   },
   components: { },
   mounted() {
-    console.log(this.$get("/api/class_homework/v2StudentList"))
+    
   }
 }
 </script>

@@ -17,11 +17,6 @@ const routes = [
     component: () => import(/* webpackChunkName: "login" */ '../views/login/index.vue')
   },
   {
-    path: '/index',
-    name: 'index',
-    component: () => import(/* webpackChunkName: "index" */ '../views/index/index.vue')
-  },
-  {
     path: '/setting',
     name: 'setting',
     component: () => import(/* webpackChunkName: "setting" */ '../views/setting/index.vue')
@@ -75,8 +70,8 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   NProgress.start()
   if (to.path !== '/login' && !store.state.token) {
-      // next('/login')
-      NProgress.done() // 结束Progress
+    // next('/login')
+    NProgress.done() // 结束Progress
   } else {
       next();
   }

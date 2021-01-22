@@ -20,40 +20,58 @@
           由于用户不符合奖励规则，您无法获得邀请奖励。
         </div>
       </div>
-      <list
-        v-model="loading"
-        :finished="finished"
-        @load="onLoad"
-        style="flex: 1; overflow-y: auto"
-      >
-        <div class="no-data">
-          <img src="../../assets/images/noData.png" alt="" />
-          <p>没有用户记录</p>
-          <p>立即推广，得现金奖励</p>
-          <van-button type="danger" round>信贷服务推广</van-button>
-        </div>
-      </list>
+      <pull-refresh v-model="refreshing" @refresh="onRefresh" style="flex: 1; overflow-y: auto">
+        <list
+          v-model="loading"
+          :finished="finished"
+          @load="onLoad"
+        >
+          <div v-for="item in listData" :key="item" style="height: 100px;background: grey;border-bottom: 1px solid skyblue">{{item}}</div>
+          <div class="loading"></div>
+          <div class="no-data" v-if="!listData.length">
+            <img src="../../assets/images/noData.png" alt="" />
+            <p>没有用户记录</p>
+            <p>立即推广，得现金奖励</p>
+            <van-button type="danger" round>信贷服务推广</van-button>
+          </div>
+        </list>
+      </pull-refresh>
     </div>
   </div>
 </template>
 
 <script>
-import { List, ImagePreview } from "vant";
+import { List, ImagePreview, PullRefresh } from "vant";
 export default {
   name: "inviteUsers",
   components: {
     List,
-    [ImagePreview.Component.name]: ImagePreview.Component,
+    PullRefresh,
+    [ImagePreview.Component.name]: ImagePreview.Component
   },
   data() {
     return {
       loading: false,
-      finished: true,
+      finished: false,
+      refreshing: false,
+      listData: [],
+      param: {
+        page: 1,
+        pageSize: 10
+      },
+      ajaxUrl: '/api/class_homework/v2StudentList'
     };
   },
   methods: {
-    onLoad() {},
+    onLoad() {
+      console.log("load")
+    },
+    onRefresh() {}
   },
+  async mounted() {
+    await this.getData()
+    console.log(this.listData)
+  }
 };
 </script>
 
@@ -170,6 +188,7 @@ export default {
       color: #fff;
       font-weight: 700;
       background: #fa5050;
+      border-color: #fa5050;
     }
   }
 }
