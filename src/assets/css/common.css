@@ -212,3 +212,6 @@ img {
   margin-bottom: constant(safe-area-inset-bottom);
   margin-bottom: env(safe-area-inset-bottom);
 }
+.max-index {
+  z-index: 999999;
+}

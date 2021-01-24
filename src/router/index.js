@@ -3,13 +3,19 @@ import VueRouter from 'vue-router'
 import store from '../store/index'
 import NProgress from 'nprogress' //进度条
 import 'nprogress/nprogress.css'
+import Home from '../views/home/index.vue'
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
     name: 'index',
-    component: import(/* webpackChunkName: "login" */ '../views/index/index.vue')
+    component: Home
+  },
+  {
+    path: '/index',
+    name: 'index',
+    component: Home
   },
   {
     path: '/login',
@@ -60,6 +66,11 @@ const routes = [
     path: '/teamLevel',
     name: 'teamLevel',
     component: () => import(/* webpackChunkName: "team" */ '../views/team/teamLevel.vue')
+  },
+  {
+    path: '/rewardRules',
+    name: 'rewardRules',
+    component: () => import(/* webpackChunkName: "rewardRules" */ '../views/rules/rewardRules.vue')
   }
 ]
 
@@ -69,8 +80,8 @@ const router = new VueRouter({
 //判断是否存在token
 router.beforeEach((to, from, next) => {
   NProgress.start()
-  if (to.path !== '/login' && !store.state.token) {
-    // next('/login')
+  if (to.path !== '/login' && !checkUserLoginInfo()) {
+    next("/login")
     NProgress.done() // 结束Progress
   } else {
       next();
@@ -80,9 +91,16 @@ router.beforeEach((to, from, next) => {
   // } else {
   //     next();
   // }
-  next();
+  // next();
 })
-
+//检查用户登录信息
+const checkUserLoginInfo = () => {
+  const userInfo = localStorage.getItem("userInfo");
+  //  || !JSON.parse(userInfo).token
+  if(!userInfo || !JSON.parse(userInfo).api_token) return false;
+  store.commit("SET_USER_INFO", JSON.parse(userInfo));
+  return true;
+}
 router.afterEach(() => {
   NProgress.done() // 结束Progress
 })

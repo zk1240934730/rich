@@ -10,7 +10,12 @@ export default {
 
     }
   },
+  methods: {
+  },
   components: { },
+  beforeCreate() {
+    
+  },
   mounted() {
     
   }

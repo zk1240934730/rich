@@ -1,10 +1,8 @@
 <template>
   <div id="spread" class="flex-col">
     <div class="tabs">
-      <div class="tab-item active">全部</div>
-      <div class="tab-item">推广</div>
-      <div class="tab-item">招募</div>
-      <div class="tab-item">其他</div>
+      <div class="tab-item" :class="activeId ? '' : 'active'" @click="changeTab(null)">全部</div>
+      <div class="tab-item" :class="activeId  == item.id ? 'active' : ''" v-for="item in cateList" :key="item.id" @click="changeTab(item.id)">{{item.name}}</div>
     </div>
     <div class="content f1">
       <list
@@ -64,10 +62,12 @@ export default {
   data() {
     return {
       list: [],
+      cateList: [], //分类列表
+      activeId: null, //选中的tab
       loading: false,
       finished: false,
-      show: true,
-      index: 0,
+      show: true, //图片预览
+      index: 0, //图片预览当前下标
       images: [
         "https://img.yzcdn.cn/vant/apple-1.jpg",
         "https://img.yzcdn.cn/vant/apple-2.jpg",
@@ -77,6 +77,26 @@ export default {
   methods: {
     onChange(index) {
       this.index = index;
+    },
+    //获取分类列表
+    getPostCateList() {
+      this.$get("/api/postCateList").then(res => {
+        this.cateList = res.data
+      })
+    },
+    //tab切换
+    getPostList() {
+      this.$get("/api/postList", {
+        cate_id: this.activeId,
+        page: this.page
+      }).then(res => {
+        this.list = res.data
+      })
+    },
+    changeTab(id) {
+      if(id == this.activeId) return
+      this.activeId = id
+      this.getPostList()
     },
     onLoad() {
       // 异步更新数据
@@ -94,6 +114,10 @@ export default {
       // }, 1000);
     },
   },
+  beforeMount() {
+    this.getPostCateList()
+    this.getPostList()
+  }
 };
 </script>
 

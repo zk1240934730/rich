@@ -10,10 +10,11 @@ let loading = null;
  *用于处理需要请求前的操作
  */
 axios.interceptors.request.use(config => {
-    loading = Toast.loading({
+    let hideLoading = config.params && config.params.hideLoading
+    !hideLoading && (loading = Toast.loading({
         message: '加载中...',
         forbidClick: true,
-    });
+    }));
     if (store.state.token) {
         config.headers["Authorization"] = "Bearer " + store.state.token;
     }
@@ -32,10 +33,11 @@ axios.interceptors.response.use(response => {
             loading.clear();
         }
         const res = response.data;
-        if (res.err_code === 0) {
+        if (res.code === 0) {
             resolve(res)
         } else {
             reject(res)
+            Toast.fail(res.msg)
         }
     })
 }, error => {

@@ -4,25 +4,58 @@
       <div class="title">修改本人微信号</div>
       <div class="des">微信号便于您与上下级推荐人沟通联系，获得/提供辅导帮助，请填写正确账号</div>
       <div class="input-box">
-        <input type="text">
-        <van-icon name="clear" color="#5a6981" class="clear-btn"/>
+        <input type="text" v-model="userInfo.wx_id">
+        <van-icon name="clear" color="#5a6981" class="clear-btn" @click="clear"/>
       </div>
+      <div class="tips">{{errorTip}}</div>
     </div>
-    <van-button class="van-btn" type="danger" round size="large" color="#fa5050"
+    <van-button class="van-btn" type="danger" round size="large" color="#fa5050" @click="edit"
       >修改</van-button
     >
   </div>
 </template>
 
 <script>
+import {mapState, mapActions} from 'vuex'
+// import utils from '../../utils/index'
 export default {
   name: "editWxNum",
+  computed: {
+    ...mapState(["userInfo"])
+  },
   data() {
     return {
-      checked: true
+      checked: true,
+      errorTip: ""
     };
   },
-  methods: {},
+  methods: {
+    ...mapActions(["GET_USER_INFO"]),
+    edit() {
+      if(!this.userInfo.wx_id) {
+        this.$toast("请输入微信号")
+        return
+      }
+      // if(!utils.checkWxNum(this.userInfo.wx_id)) {
+      if(this.userInfo.wx_id.length < 6){
+        this.errorTip = "输入微信号为6-20位数字、字母、下划线、减号或组合文本"
+        return
+      }
+      this.errorTip = ""
+      this.$post("/api/wxEdit", {
+        wx_id: this.userInfo.wx_id
+      }).then(res => {
+        this.$toast(res.msg)
+        this.navigate('/setting', 2000, () => {
+          this.GET_USER_INFO()
+        } )
+      })
+    },
+    clear() {
+      this.userInfo.wx_id = ""
+      this.errorTip = ""
+    }
+  },
   mounted() {},
 };
 </script>
@@ -73,6 +106,12 @@ export default {
     }
     .input-box {
       position: relative;
+    }
+    .tips {
+      font-family: PingFangSC-Regular;
+      font-size: .75rem;
+      color: #fc514d;
+      letter-spacing: -.05625rem;
     }
     .clear-btn {
           width: 1rem;

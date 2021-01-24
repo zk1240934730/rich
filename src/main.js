@@ -7,7 +7,13 @@ import {get, post} from './api/request'
 import mixin from './mixin/index'
 import 'lib-flexible'
 import clipboard from 'clipboard';
+import VueAwesomeSwiper from 'vue-awesome-swiper'
 
+// import style
+import 'swiper/swiper-bundle.css'
+ 
+Vue.use(VueAwesomeSwiper, /* { default options with global component } */)
+Toast.className = 'max-index'
 Vue.use(Button);
 Vue.use(Popup);
 Vue.use(Image);

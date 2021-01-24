@@ -14,20 +14,44 @@
           <!-- 登录表单 -->
           <form action="">
             <div class="phone">
-              <input type="tel" placeholder="请输入您的手机号码" />
+              <input
+                type="tel"
+                v-model="phone"
+                placeholder="请输入您的手机号码"
+              />
             </div>
             <div class="password">
-              <input class="f6" type="password" placeholder="请输入验证码" />
-              <span class="f4" @click="getCode"> {{countDown == 61 ? '获取验证码' : countDown + 's'}}</span>
+              <input
+                class="f6"
+                v-model="code"
+                type="password"
+                placeholder="请输入验证码"
+              />
+              <span class="f4" @click="getCode">
+                {{ countDown == 61 ? "获取验证码" : "重新发送(" + countDown + ")" }}</span
+              >
             </div>
-            <button class="submit-btn">免费注册/登录</button>
+            <p class="pass-msg-generalMsgWrapper pass-msg-generalError">
+              {{ formMsg }}
+            </p>
+            <button
+              class="submit-btn"
+              @click="registerLogin"
+              :disabled="isLogin"
+            >
+              {{ isLogin ? "登录中..." : "免费注册/登录" }}
+            </button>
           </form>
           <!-- 前往第三方h5登录 -->
           <div class="h5-login">账号密码登录</div>
           <!-- 相关协议 -->
           <div class="form-aggrement">
-              <span>同意 </span>
-              <p class="f1"><span> 有钱花用户服务协议 </span>、<span> 隐私政策 </span> 和 <span> 用户信息授权协议 </span>；同时同意 <span> 百度用户协议 </span>、<span>隐私政策</span></p>
+            <span>同意&nbsp; &nbsp;&nbsp;&nbsp;</span>
+            <p class="f1">
+              <span> 有钱花用户服务协议 </span>、<span> 隐私政策 </span> 和
+              <span> 用户信息授权协议 </span>；同时同意
+              <span> 百度用户协议 </span>、<span>隐私政策</span>
+            </p>
           </div>
         </div>
         <div class="close-btn" @click="show = false"></div>
@@ -37,28 +61,82 @@
 </template>
 
 <script>
+import utils from "../../utils/index";
+import { mapMutations } from 'vuex'
 export default {
   name: "login",
   data() {
     return {
       show: false,
       countDown: 61,
-      countDownInterval: null
+      countDownInterval: null,
+      isLogin: false,
+      formMsg: "",
+      phone: "18326024918",
+      code: "1234",
     };
   },
+  watch: {
+    show(v) {
+      if (!v) {
+        this.formMsg = "";
+        this.phone = "";
+        this.code = "";
+      }
+    },
+  },
   methods: {
+    ...mapMutations(['SET_USER_INFO']),
     // 获取验证码
     getCode() {
-      if(this.countDown != 61) return;
-      this.countDown --;
-      this.countDownInterval = setInterval(() => {
-        this.countDown --;
-        if(this.countDown <= 0) {
-          clearInterval(this.countDownInterval);
-          this.countDown = 61;
-        }
-      }, 1000)
-    }
+      if (!utils.checkPhone(this.phone)) {
+        this.formMsg = "手机号格式错误";
+        return;
+      }
+      if (this.countDown != 61) return;
+      this.$get("/api/sendCode", {
+        phone: this.phone,
+      })
+        .then(() => {
+          this.countDown--;
+          this.countDownInterval = setInterval(() => {
+            this.countDown--;
+            if (this.countDown <= 0) {
+              clearInterval(this.countDownInterval);
+              this.countDown = 61;
+            }
+          }, 1000);
+        })
+        .catch((err) => {
+          console.error(err);
+        })
+        .finally(() => {});
+    },
+    //验证码登录
+    registerLogin() {
+      if (!this.code) {
+        this.formMsg = "请输入动态验证码";
+        return;
+      }
+      this.isLogin = true;
+      this.$get("/api/login", {
+        phone: this.phone,
+        code: this.code,
+      })
+        .then((res) => {
+          this.SET_USER_INFO(res.data)
+          this.$toast.success("登录成功")
+          this.navigate('/index', 2000)
+        })
+        .catch(() => {
+          this.formMsg = "验证码已失效，请重新获取";
+        })
+        .finally(() => {
+          this.isLogin = false;
+        });
+    },
+  },
+  mounted() {
   }
 };
 </script>
@@ -167,15 +245,16 @@ export default {
         }
       }
       .h5-login {
-        position: absolute;
+        // position: absolute;
         left: 50%;
-        transform: translate(-50%, 50%);
+        // transform: translate(-50%, 50%);
+        text-align: center;
         bottom: 5.3125rem;
         font-size: 0.8125rem;
         font-family: FZLanTingHeiS-R-GB;
         font-weight: 400;
         color: #c50300;
-        line-height: 3.75rem;
+        // line-height: 3.75rem;
         &::after {
           content: "";
           display: inline-block;
@@ -188,19 +267,19 @@ export default {
         }
       }
       .form-aggrement {
-              color: #fff;
-            opacity: .8;
-            font-size: 1.375rem;
-            margin-top: 1.875rem;
-            line-height: 1.4375rem;
-            text-align: center;
-            transform: scale(.5) translateX(-50%);
-            width: 200%;
-            transform-origin: center;
-            margin-bottom: 1.09375rem;
-            display: flex;
-            line-height: 2.1rem;
-            text-align: left;
+        color: #fff;
+        opacity: 0.8;
+        font-size: 1.375rem;
+        margin-top: -0.875rem;
+        line-height: 1.4375rem;
+        text-align: center;
+        transform: scale(0.5) translateX(-50%);
+        width: 200%;
+        transform-origin: center;
+        margin-bottom: 1.09375rem;
+        display: flex;
+        line-height: 2.1rem;
+        text-align: left;
       }
     }
     .close-btn {
@@ -213,6 +292,16 @@ export default {
       position: absolute;
       transform: translate(-50%);
     }
+  }
+  .pass-msg-generalMsgWrapper {
+    width: 100%;
+    margin-top: 0.3125rem;
+    min-height: 0.625rem;
+    text-align: left;
+    font-size: 0.625rem;
+    line-height: 1.25rem;
+    color: #fff;
+    opacity: 0.8;
   }
 }
 </style>

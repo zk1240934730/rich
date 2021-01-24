@@ -3,44 +3,88 @@
     <van-popup
       v-model="show"
       position="bottom"
+      @close="close"
       :style="{
-
         borderTopLeftRadius: '.5rem',
         borderTopRightRadius: '.5rem',
       }"
     >
-      <div class="popup-head flex-row">
+      <div class="popup-head flex-row" @click="close">
         <van-icon name="cross" color="#999" />
       </div>
       <div class="popup-title">请严格遵守以下规则</div>
       <div class="popup-body">
-        <div class="rule-item">
-          1. 平台所有服务零费用，不允许任何人员以任何形式收取任何费用。
+        <div class="rule-item" v-for="item in titleArr" :key="item.name">
+          {{item.content}}
         </div>
-        <div class="rule-item">
-          2.
-          请对您邀请的合伙人进行合规培训，如下级出现违规，可能会影响您的正常推广。
-        </div>
-        <div class="tip">
-          平台会不定期对用户进行回访，并开通投诉通道，如发现有合伙人存在上述违规行为，平台有权对相应合伙人进行追责
-        </div>
-        <div class="popup-btn">我已了解，继续招募</div>
+        <div class="tip">{{desc.content}}</div>
+        <div class="popup-btn" @click="shareImgsShow = true; $store.commit('SET_SHARE_TYPE', $store.state.shareType + 'Banner');$parent.shareMaskShow = false">{{btnText}}</div>
       </div>
       <!-- <van-button type="danger" size="large">我已了解，继续招募</van-button> -->
     </van-popup>
-    <share-imgs></share-imgs>
+    <share-imgs :share-imgs-show="shareImgsShow"></share-imgs>
   </div>
 </template>
 
 <script>
 import ShareImgs from './share-imgs.vue'
+import {mapState} from 'vuex'
 export default {
   components: {ShareImgs},
+  props: {
+    shareMaskShow: {
+      type: Boolean,
+      default: false
+    },
+    btnText: {
+      type: String,
+      default: ''
+    }
+  },
+  watch: {
+    shareMaskShow: {
+      immediate: true,
+      handler(v) {
+        this.show = v
+      }
+    },
+    shareType(v) {
+      switch(v) {
+        case 'borrow': this.getBorrowDesc(); break;
+        case 'invite': this.getInviteDesc(); break;
+      }
+    }
+  },
+  computed: {
+    ...mapState(["shareType"])
+  },
   data() {
     return {
-      show: true,
+      show: false,
+      shareImgsShow: false,
+      desc: '',
+      titleArr: []
     };
   },
+  methods: {
+    close() {
+      this.$parent.shareMaskShow = false
+    },
+    getBorrowDesc() {
+      this.$get("/api/borrowDesc").then(res => {
+        let {content} = res.data
+        this.desc = content.desc
+        this.titleArr = content.title
+      })
+    },
+    getInviteDesc() {
+      this.$get("/api/inviteDesc").then(res => {
+        let {content} = res.data
+        this.desc = content.desc
+        this.titleArr = content.title
+      })
+    }
+  }
 };
 </script>
 

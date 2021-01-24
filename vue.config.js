@@ -2,13 +2,14 @@ module.exports = {
     devServer: {
       proxy: {
         '/api': {
-          target: 'https://wwwadmin.iqintong.com/api',
+          target: 'http://tuiyouqian.wudaojz.com/',
           ws: false,
           changeOrigin: true,
-          pathRewrite : {
-            "^/api" : ""
-          }
+          // pathRewrite : {
+          //   "^/api" : ""
+          // }
         }
       }
-    }
+    },
+    // publicPath: '/dist'
   }
