@@ -8,45 +8,46 @@
       <div data-v-4bdd4575="" class="tab-item">无效用户</div>
     </div>
     <div class="content flex-col">
-      <div class="tips">
-        <div class="tips-title flex-row">
-          <span>温馨提示</span>
-          <router-link to="/orderList"><span>查看订单</span></router-link>
-        </div>
-        <div class="remind">
-          未获得有钱花额度的用户，可申请其他产品，您可查看订单查看对应奖励。
-        </div>
-        <div class="error-tip">
-          由于用户不符合奖励规则，您无法获得邀请奖励。
-        </div>
-      </div>
-      <pull-refresh v-model="refreshing" @refresh="onRefresh" style="flex: 1; overflow-y: auto">
-        <list
-          v-model="loading"
-          :finished="finished"
-          @load="onLoad"
-        >
-          <div v-for="item in listData" :key="item" style="height: 100px;background: grey;border-bottom: 1px solid skyblue">{{item}}</div>
-          <div class="loading"></div>
-          <div class="no-data" v-if="!listData.length">
-            <img src="../../assets/images/noData.png" alt="" />
-            <p>没有用户记录</p>
-            <p>立即推广，得现金奖励</p>
-            <van-button type="danger" round>信贷服务推广</van-button>
+      <!-- <list
+        v-model="loading"
+        :finished="finished"
+        @load="onLoad"
+         style="flex: 1; overflow-y: auto"
+      >  -->
+      <!-- :on-refresh="refresh" -->
+      <scroller :on-infinite="infinite" ref="myscroller" class="f1">
+        <div class="tips">
+          <div class="tips-title flex-row">
+            <span>温馨提示</span>
+            <router-link to="/orderList"><span>查看订单</span></router-link>
           </div>
-        </list>
-      </pull-refresh>
+          <div class="remind">
+            未获得有钱花额度的用户，可申请其他产品，您可查看订单查看对应奖励。
+          </div>
+          <div class="error-tip">
+            由于用户不符合奖励规则，您无法获得邀请奖励。
+          </div>
+        </div>
+        <div v-for="item in listData" :key="item" style="height: 100px;background: grey;border-bottom: 1px solid skyblue">{{item}}</div>
+        <div class="loading"></div>
+        <div class="no-data" v-if="!listData.length">
+          <img src="../../assets/images/noData.png" alt="" />
+          <p>没有用户记录</p>
+          <p>立即推广，得现金奖励</p>
+          <van-button type="danger" round>信贷服务推广</van-button>
+        </div>
+      
+    </scroller>
+    <!-- </list> -->
     </div>
   </div>
 </template>
 
 <script>
-import { List, ImagePreview, PullRefresh } from "vant";
+import { ImagePreview } from "vant";
 export default {
   name: "inviteUsers",
   components: {
-    List,
-    PullRefresh,
     [ImagePreview.Component.name]: ImagePreview.Component
   },
   data() {
@@ -63,8 +64,9 @@ export default {
     };
   },
   methods: {
-    onLoad() {
+    infinite(done) {
       console.log("load")
+      setTimeout(() => { this.$refs.myscroller.finishInfinite(true); done()}, 2000)
     },
     onRefresh() {}
   },
