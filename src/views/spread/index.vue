@@ -5,24 +5,14 @@
       <div class="tab-item" :class="activeId  == item.id ? 'active' : ''" v-for="item in cateList" :key="item.id" @click="changeTab(item.id)">{{item.name}}</div>
     </div>
     <div class="content f1">
-      <list
-        v-model="loading"
-        :finished="finished"
-        finished-text=""
-        @load="onLoad"
-      >
+      <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : ''">
         <div class="list-item" v-for="item in listData" :key="item.id">
           <div class="time">
             <span class="date" v-if="!dateFormat(item.created_at).month">{{dateFormat(item.created_at).day}}</span>
             <span class="date" v-else style="color: #fa5050; font-size: .875rem;font-family: DXMfont-Regular;font-weight: 400"><span style="font-size: 1.125rem;font-weight: 600;color: #fa5050;font-family: DXMfont-Bold;">{{dateFormat(item.created_at).month}}</span>{{dateFormat(item.created_at).day}}月</span>
             <span class="time-text">{{dateFormat(item.created_at).hour}}</span>
           </div>
-          <div class="center-content" v-html="item.content">
-            <!-- <p>💞今天的喜报来啦！</p>
-            <p>🚀7分钟，大额授信20万，坐等佣金5000元</p>
-            <p>💸仅用12分钟，佣金到账2500元，就是这么快。</p>
-            <p>🔥授信快，佣金高，马上推起来</p> -->
-          </div>
+          <div class="center-content" v-html="item.content"></div>
           <div class="img-list">
             <img
               :src="_item"
@@ -35,15 +25,11 @@
           <div class="clipboard-btn" id="text-clipboard" :data-clipboard-text="item.content.replace(/<\/?.+?\/?>/g, '')" @click="copy('text-clipboard')">复制文案</div>
         </div>
         <div class="loading-empty flex-col flex-col-center">
-          <loading type="spinner" v-if="initLoading"/>
           <no-data v-if="!initLoading && !listData.length"></no-data>
         </div>
-      </list>
+      </scroller>
     </div>
-    <van-image-preview v-model="show" :images="previewItem.images || []" @change="onChange" :startPosition="previewIndex">
-      <!-- <template v-slot:index>第{{ index }}页</template> -->
-      
-    </van-image-preview>
+    <van-image-preview v-model="show" :images="previewItem.images || []" @change="onChange" :startPosition="previewIndex"></van-image-preview>
     <div class="content-wrapper" v-if="show">
       <div class="content" v-html="previewItem.content"></div>
       <div class="clipboard-btn" id="preview-clipboard" :data-clipboard-text="previewItem.content.replace(/<\/?.+?\/?>/g, '')" @click="copy('preview-clipboard')">复制文案</div>
@@ -52,15 +38,13 @@
 </template>
 
 <script>
-import { List, ImagePreview, Loading  } from "vant";
+import { ImagePreview } from "vant";
 import utils from '../../utils/index';
 import NoData from '../../components/empty-data'
 export default {
   name: "spread",
   components: {
-    List,
     NoData,
-    Loading,
     [ImagePreview.Component.name]: ImagePreview.Component,
   },
   data() {
@@ -69,10 +53,10 @@ export default {
       dateFormat: utils.dateFormat,
       cateList: [], //分类列表
       activeId: null, //选中的tab
-      loading: false,
-      finished: false,
-      initLoading: false,
+      initLoading: false, //初始加载
+      hasMoreData: true, //是否有更多数据
       page: 1,
+      pageSize: 10,
       show: false, //图片预览
       previewIndex: 0, //图片预览当前下标
       previewItem: {} //当前预览的信息
@@ -90,11 +74,20 @@ export default {
         this.cateList = res.data
       })
     },
+    // 记载数据
+    infinite() {
+      if(!this.hasMoreData) {
+        this.$refs.myscroller.finishInfinite(true);
+        return
+      }
+      
+      this.getPostList()
+      this.page ++;
+    },
     //获取列表数据
     getPostList() {
       if(this.page == 1) {
         this.initLoading = true
-        this.finished = true
         this.listData = []
       }
       this.loading = true;
@@ -104,6 +97,9 @@ export default {
         hideLoading: true
       }).then(res => {
         let data = res.data.data
+        if(data.length < this.pageSize) {
+          this.hasMoreData = false
+        }
         data.forEach(item => {
           let arr = item.images.split(",")
           item.images = []
@@ -112,10 +108,10 @@ export default {
           })
         })
         this.listData = this.page == 1 ? data : this.listData.concat(data)
+        console.log(this.listData)
       }).catch(() => {}).finally(() => {
-        this.loading = false
+        this.$refs.myscroller.finishInfinite(true);
         this.initLoading = false
-        this.finished = true
       })
     },
     //tab切换
@@ -129,27 +125,13 @@ export default {
       this.previewItem = item
       this.previewIndex = index
       this.show = true
-    },
-    onLoad() {
-      console.log("load")
-      // 异步更新数据
-      // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      // setTimeout(() => {
-      //   for (let i = 0; i < 10; i++) {
-      //     this.list.push(this.list.length + 1);
-      //   }
-      //   // 加载状态结束
-      //   this.loading = false;
-      //   // 数据全部加载完成
-      //   if (this.list.length >= 40) {
-      //     this.finished = true;
-      //   }
-      // }, 1000);
-    },
+    }
   },
   beforeMount() {
     this.getPostCateList()
-    this.getPostList()
+  },
+  mounted() {
+    this.$refs.myscroller.finishInfinite(false);
   }
 };
 </script>
@@ -194,7 +176,7 @@ export default {
   }
   .content {
     overflow-y: auto;
-    padding-top: 1.875rem;
+    position: relative;
     .list-item {
       display: flex;
       flex-direction: column;
@@ -202,7 +184,7 @@ export default {
 
       margin-top: 2.5rem;
       &:first-child {
-        margin-top: 0;
+        margin-top: 1.875rem;
       }
       .time {
         font-size: 0.8125rem;
