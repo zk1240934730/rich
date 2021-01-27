@@ -65,6 +65,11 @@ const dateFormat = (date) => {
             day: '今天',
             hour: getDateDiff(oldDate.getTime())
         }
+    } else if(currentYear == oldYear && currentMonth == oldMonth && currentDay - 1 == oldDay) {
+        formatObj = {
+            day: '昨天',
+            hour: getDateDiff(oldDate.getTime())
+        }
     } else {//不是同一天
         formatObj = {
             day: oldDay,
@@ -91,7 +96,7 @@ function getDateDiff(timestamp) {
     var yearC = diffValue / year;
     var monthC = diffValue / month;
     var weekC = diffValue / (7 * day);
-    var dayC = diffValue / day;
+    // var dayC = diffValue / day;
     var hourC = diffValue / hour;
     var minC = diffValue / minute;
     if (yearC >= 1) {
@@ -100,9 +105,11 @@ function getDateDiff(timestamp) {
         result = "" + parseInt(monthC) + "月前";
     } else if (weekC >= 1) {
         result = "" + parseInt(weekC) + "周前";
-    } else if (dayC >= 1) {
-        result = "" + parseInt(dayC) + "天前";
-    } else if (hourC >= 1) {
+    }
+    // else if (dayC >= 1) {
+    //     result = "" + parseInt(dayC) + "天前";
+    // } 
+    else if (hourC >= 1) {
         result = "" + parseInt(hourC) + "小时前";
     } else if (minC >= 1) {
         result = "" + parseInt(minC) + "分钟前";
