@@ -41,7 +41,7 @@ export default {
                     this.hasMoreData = false
                 }
                 this.formatData && typeof this.formatData == 'function' && this.formatData(data);
-                // this.listData = this.page == 1 ? data : this.listData.concat(data);
+                this.listData = this.page == 1 ? data : this.listData.concat(data);
             }).catch(() => { }).finally(() => {
                 this.$refs.myscroller && this.$refs.myscroller.finishInfinite(true);
                 this.initLoading = false

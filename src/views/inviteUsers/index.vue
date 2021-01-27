@@ -41,7 +41,19 @@
             </template>
           </div>
         </template>
-        <div v-for="item in listData" :key="item.id" style="height: 100px;background: grey;border-bottom: 1px solid skyblue">{{item}}</div>
+        <div class="user-item flex-row" v-for="item in listData" :key="item.id">
+          <img :src="baseImgUrl + item.invite_user.avatar" alt="">
+          <div class="f1">
+            <div class="user-item-top flex-row flex-row-between flex-col-center">
+              <span class="f2">{{item.invite_user.username}}</span>
+              <span class="f1">{{item.status | statusFormat}}</span>
+            </div>
+            <div class="user-item-btm flex-row flex-row-between flex-col-center">
+              <span>{{item.invite_user.nickname}}</span>
+              <span>{{item.invite_user.created_at}}</span>
+            </div>
+          </div>
+        </div>
         <div class="loading-empty flex-col flex-col-center">
           <no-data v-if="!initLoading && !listData.length" :btm-show="true" btn-text="信贷服务推广" @emitClick="emitClick"></no-data>
         </div>
@@ -93,6 +105,12 @@ export default {
       ],
       inviteUserRemark: []
     };
+  },
+  filters: {
+    statusFormat(status) {
+      let arr = ["", "待申请", "待借款", "已借款", "已过有效期"]
+      return arr[status];
+    }
   },
   methods: {
     //获取文案
@@ -206,6 +224,41 @@ export default {
     .error-tip {
       font-size: 0.75rem;
       color: #fa5050;
+    }
+    .user-item {
+      padding: 1.25rem 0;
+      border-bottom: 1px solid rgba(218,224,234,.5);
+      color: #5a6981;
+      margin: 0 1.25rem;
+      img {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+      }
+      > div {
+        overflow: hidden;
+      }
+      .user-item-top {
+        width: 100%;
+        overflow: hidden;
+        span:first-child {
+          height: 1rem;
+          line-height: 1rem;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          font-size: .875rem;
+          font-weight: 700;
+        }
+        span:last-child {
+          text-align: right;
+        }
+      }
+      .user-item-btm {
+        margin-top: .4375rem;
+        font-size: .75rem;
+      }
     }
   }
 }
