@@ -3,11 +3,11 @@
     <div class="head">
       <div class="title">可提现收入（元）</div>
       <div class="numBox">
-        <div class="num">0.00</div>
+        <div class="num">{{utils.numberFormat(walletInfo.cashProfit, 2)}}</div>
         <div class="btn disable">提现</div>
       </div>
       <div class="sh">
-        <span class="num fdc">0.00</span>元审核中（奖励需<span class="num fdc"
+        <span class="num fdc">{{utils.numberFormat(walletInfo.checkProfit, 2)}}</span>元审核中（奖励需<span class="num fdc"
           >24</span
         >h审核后可提现）
       </div>
@@ -17,38 +17,42 @@
         <div class="tab-item active">收入明细</div>
         <div class="tab-item">提现记录</div>
       </div>
-      <list
-        v-model="loading"
-        :finished="finished"
-        @load="onLoad"
-        style="flex: 1; overflow-y: auto"
-      >
-        <div class="no-data" v-for="item in 10" :key="item">
-          <img src="../../assets/images/noData.png" alt="" />
-          <p>没有记录</p>
-        </div>
-      </list>
+      <div class="f1" style="position: relative">
+        <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : '没有记录'">
+          <div class="loading-empty flex-col flex-col-center">
+            <no-data v-if="!initLoading && !listData.length"></no-data>
+          </div>
+        </scroller>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { List, ImagePreview } from "vant";
+import NoData from '../../components/empty-data'
+import utils from "../../utils/index.js";
 export default {
   name: "records",
   components: {
-    List,
-    [ImagePreview.Component.name]: ImagePreview.Component,
+    NoData,
   },
   data() {
     return {
-      loading: false,
-      finished: true,
+      walletInfo: {},
+      utils
     };
   },
   methods: {
-    onLoad() {},
+    // 获取用户钱包及收入
+    getWallet() {
+      this.$get("/api/wallet").then((res) => {
+        this.walletInfo = res.data;
+      });
+    },
   },
+  beforeMount() {
+    this.getWallet()
+  }
 };
 </script>
 
@@ -153,23 +157,6 @@ export default {
             transform: translateX(-50%);
           }
         }
-      }
-    }
-    .no-data {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      img {
-        margin: 3.75rem auto 0.1875rem;
-        width: 5.5rem;
-        height: 5.5rem;
-      }
-      p {
-        text-align: center;
-        font-family: PingFangSC-Regular;
-        font-size: 0.8125rem;
-        color: #868e9e;
-        line-height: 1.25rem;
       }
     }
   }

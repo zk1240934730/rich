@@ -74,10 +74,7 @@
         <div class="bottom-title flex-row">
           <div class="flex-row flex-col-center">
             <span>本月团队等级</span>
-            <div class="bage-level">
-              <img :src="require(`../../assets/images/vip/vip_${teamLevel.level || 1}.png`)" alt="">
-              <span>等级{{teamLevel.level | numberToString}}</span>
-            </div>
+            <level-bg :level="teamLevel.level"></level-bg>
           </div>
           <router-link to="/teamLevel"
             ><span class="detail">详情</span></router-link
@@ -122,12 +119,13 @@
 </template>
 
 <script>
-import ShareMask from "../../components/share-mask.vue";
+import ShareMask from "../../components/share-mask";
+import LevelBg from '../../components/level-bg';
 import { mapState } from "vuex";
 import utils from "../../utils/index.js";
 export default {
   name: "index",
-  components: { ShareMask },
+  components: { ShareMask, LevelBg },
   computed: {
     ...mapState(["userInfo"]),
   },
@@ -160,12 +158,6 @@ export default {
       rewardRuleImage: '',//奖励规则图片
       wxFollowImage: '' //公众号图片
     };
-  },
-  filters: {
-    numberToString(value) {
-      const arr = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
-      return arr[value]
-    }
   },
   methods: {
     //获取轮播
@@ -387,34 +379,6 @@ export default {
           color: #222;
           line-height: 0.875rem;
           font-weight: 700;
-        }
-        .bage-level {
-          margin-left: 0.5rem;
-          padding-left: 0.625rem;
-          height: 1.0625rem;
-          border-radius: 0.53125rem;
-          position: relative;
-          line-height: 1;
-          display: flex;
-          align-items: center;
-          img {
-            width: 1.3125rem;
-            height: 1.0625rem;
-            position: relative;
-            z-index: 1;
-          }
-          > span {
-            flex: 1;
-            width: 3.5rem;
-            height: 100%;
-            line-height: 1.0625rem;
-            padding-left: 1rem;
-            margin-left: -0.7rem;
-            background-color: #ffe5cf;
-            border-radius: 0 3.125rem 3.125rem 0;
-            font-size: 0.6875rem;
-            color: #7e4315;
-          }
         }
       }
       .detail {

@@ -1,78 +1,119 @@
 <template>
   <div id="invite-users">
-    <div data-v-4bdd4575="" class="tabs">
-      <div data-v-4bdd4575="" class="tab-item active">全部</div>
-      <div data-v-4bdd4575="" class="tab-item">待申请</div>
-      <div data-v-4bdd4575="" class="tab-item">待借款</div>
-      <div data-v-4bdd4575="" class="tab-item">已借款</div>
-      <div data-v-4bdd4575="" class="tab-item">无效用户</div>
+    <div class="tabs">
+      <div class="tab-item" :class="tabIndex == index ? 'active' : ''" @click="changeTab(item.status, 'status', index)" v-for="(item, index) in tabList" :key="item.status">{{item.name}}</div>
     </div>
     <div class="content flex-col">
-      <!-- <list
-        v-model="loading"
-        :finished="finished"
-        @load="onLoad"
-         style="flex: 1; overflow-y: auto"
-      >  -->
-      <!-- :on-refresh="refresh" -->
-      <scroller :on-infinite="infinite" ref="myscroller" class="f1">
-        <div class="tips">
-          <div class="tips-title flex-row">
-            <span>温馨提示</span>
-            <router-link to="/orderList"><span>查看订单</span></router-link>
+      <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : ''">
+        <template v-for="item in inviteUserRemark">
+          <div class="tips" :key="item.name" v-if="item.name == tabList[tabIndex].name">
+            <!-- 全部 -->
+            <template v-if="tabIndex == 0">
+              <div class="tips-title flex-row">
+                <span>{{item.content.remark.name}}</span>
+                <router-link to="/orderList"><span>查看订单</span></router-link>
+              </div>
+              <div class="remind">
+                {{item.content.remark.content}}
+              </div>
+            </template>
+            <!-- 待申请 待借款 已借款 -->
+            <template v-if="tabIndex == 1 || tabIndex == 2 || tabIndex == 3">
+              <div class="tips-title">
+                <template v-if="tabIndex != 3">
+                  <span>{{item.content.status.name}}：</span>
+                  <p style="display: inline">{{item.content.status.content}}</p>
+                </template>
+                <template v-else>
+                  <span>{{item.content.status.name}}：</span>
+                  <p style="display: inline">{{item.content.status.content}}</p>
+                  <router-link to="/orderList"><span style="float: right">收入记录</span></router-link>
+                </template>
+              </div>
+              <div class="tips-title" style="margin-top: .3125rem;">
+                <span>{{item.content.remark.name}}：</span>
+                <p style="display: inline">{{item.content.remark.content}}</p>
+              </div>
+            </template>
+            <!-- 失效用户 -->
+            <template v-if="tabIndex == 4">
+              <div class="error-tip">{{item.content.remark.content}}</div>
+            </template>
           </div>
-          <div class="remind">
-            未获得有钱花额度的用户，可申请其他产品，您可查看订单查看对应奖励。
-          </div>
-          <div class="error-tip">
-            由于用户不符合奖励规则，您无法获得邀请奖励。
-          </div>
+        </template>
+        <div v-for="item in listData" :key="item.id" style="height: 100px;background: grey;border-bottom: 1px solid skyblue">{{item}}</div>
+        <div class="loading-empty flex-col flex-col-center">
+          <no-data v-if="!initLoading && !listData.length" :btm-show="true" btn-text="信贷服务推广" @emitClick="emitClick"></no-data>
         </div>
-        <div v-for="item in listData" :key="item" style="height: 100px;background: grey;border-bottom: 1px solid skyblue">{{item}}</div>
-        <div class="loading"></div>
-        <div class="no-data" v-if="!listData.length">
-          <img src="../../assets/images/noData.png" alt="" />
-          <p>没有用户记录</p>
-          <p>立即推广，得现金奖励</p>
-          <van-button type="danger" round>信贷服务推广</van-button>
-        </div>
-      
-    </scroller>
-    <!-- </list> -->
+      </scroller>
     </div>
+    <share-mask :shareMaskShow="shareMaskShow" btn-text="我已了解，继续推广"></share-mask>
   </div>
 </template>
 
 <script>
 import { ImagePreview } from "vant";
+import NoData from '../../components/empty-data'
+import ShareMask from '../../components/share-mask'
 export default {
   name: "inviteUsers",
   components: {
-    [ImagePreview.Component.name]: ImagePreview.Component
+    [ImagePreview.Component.name]: ImagePreview.Component,
+    NoData,
+    ShareMask
   },
   data() {
     return {
-      loading: false,
-      finished: false,
-      refreshing: false,
-      listData: [],
-      param: {
-        page: 1,
-        pageSize: 10
+      params: {
+        status: 0
       },
-      ajaxUrl: '/api/class_homework/v2StudentList'
+      shareMaskShow: false,
+      ajaxUrl: '/api/inviteUserList',
+      tabList: [
+        {
+          name: '全部',
+          status: null
+        },
+        {
+          name: '待申请',
+          status: 1
+        },
+        {
+          name: '待借款',
+          status: 2
+        },
+        {
+          name: '已借款',
+          status: 3
+        },
+        {
+          name: '无效用户',
+          status: 4
+        }
+      ],
+      inviteUserRemark: []
     };
   },
   methods: {
-    infinite(done) {
-      console.log("load")
-      setTimeout(() => { this.$refs.myscroller.finishInfinite(true); done()}, 2000)
+    //获取文案
+    getInviteUserRemark() {
+      this.$get("/api/inviteUserRemark", {
+        hideLoading: true
+      }).then(res => {
+        this.inviteUserRemark = res.data
+      })
     },
-    onRefresh() {}
+    //提供给子组件调用
+    emitClick() {
+      this.shareMaskShow = true; 
+      this.$store.commit('SET_SHARE_TYPE', 'borrow')
+    }
   },
-  async mounted() {
-    await this.getData()
-    console.log(this.listData)
+  beforeMount() {
+    this.getInviteUserRemark()
+  },  
+  mounted() {
+    this.$refs.myscroller.finishInfinite(false);
   }
 };
 </script>
