@@ -1,19 +1,36 @@
 <template>
   <div id="no-data">
     <img src="../assets/images/noData.png" alt="" />
-    <p>没有用户记录</p>
-    <p>立即推广，得现金奖励</p>
-    <van-button type="danger" round>信贷服务推广</van-button>
+    <template v-if="btmShow">
+      <p>没有用户记录</p>
+      <p>立即推广，得现金奖励</p>
+      <van-button type="danger" round @click="show">{{btnText}}</van-button>
+    </template>
   </div>
 </template>
 
 <script>
 export default {
+  props: {
+    btnText: {
+      type: String,
+      default: ""
+    },
+    btmShow: {
+      type: Boolean,
+      default: false 
+    }
+  },
   data() {
     return {
-      show: true,
     };
   },
+  methods: {
+    // 调用父组件的方法
+    show() {
+      this.$emit("emitClick")
+    }
+  }
 };
 </script>
 

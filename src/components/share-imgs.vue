@@ -96,7 +96,6 @@ export default {
     },
     //获取轮播图
     getBorrowBanner() {
-      console.error("???")
       this.$get("/api/borrowBanner").then(res => {
         this.imgList = res.data
       })

@@ -1,11 +1,11 @@
 <template>
   <div id="spread" class="flex-col">
     <div class="tabs">
-      <div class="tab-item" :class="activeId ? '' : 'active'" @click="changeTab(null)">全部</div>
-      <div class="tab-item" :class="activeId  == item.id ? 'active' : ''" v-for="item in cateList" :key="item.id" @click="changeTab(item.id)">{{item.name}}</div>
+      <div class="tab-item" :class="params.cate_id ? '' : 'active'" @click="changeTab(null, 'cate_id')">全部</div>
+      <div class="tab-item" :class="params.cate_id  == item.id ? 'active' : ''" v-for="item in cateList" :key="item.id" @click="changeTab(item.id, 'cate_id')">{{item.name}}</div>
     </div>
     <div class="content f1">
-      <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : ''">
+      <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : '没有数据'">
         <div class="list-item" v-for="item in listData" :key="item.id">
           <div class="time">
             <span class="date" v-if="!dateFormat(item.created_at).month">{{dateFormat(item.created_at).day}}</span>
@@ -49,14 +49,12 @@ export default {
   },
   data() {
     return {
-      listData: [],
       dateFormat: utils.dateFormat,
       cateList: [], //分类列表
-      activeId: null, //选中的tab
-      initLoading: false, //初始加载
-      hasMoreData: true, //是否有更多数据
-      page: 1,
-      pageSize: 10,
+      params: {
+        cate_id: null, //选中的tab
+      },
+      ajaxUrl: "/api/postList",
       show: false, //图片预览
       previewIndex: 0, //图片预览当前下标
       previewItem: {} //当前预览的信息
@@ -74,52 +72,15 @@ export default {
         this.cateList = res.data
       })
     },
-    // 记载数据
-    infinite() {
-      if(!this.hasMoreData) {
-        this.$refs.myscroller.finishInfinite(true);
-        return
-      }
-      
-      this.getPostList()
-      this.page ++;
-    },
-    //获取列表数据
-    getPostList() {
-      if(this.page == 1) {
-        this.initLoading = true
-        this.listData = []
-      }
-      this.loading = true;
-      this.$get("/api/postList", {
-        cate_id: this.activeId,
-        page: this.page,
-        hideLoading: true
-      }).then(res => {
-        let data = res.data.data
-        if(data.length < this.pageSize) {
-          this.hasMoreData = false
-        }
-        data.forEach(item => {
-          let arr = item.images.split(",")
-          item.images = []
-          arr.forEach(ele => {
-            item.images.push(this.baseImgUrl + ele)
-          })
+    //处理接口返回的数据  如有需要就定义
+    formatData(data) {
+      data.forEach(item => {
+        let arr = item.images.split(",")
+        item.images = []
+        arr.forEach(ele => {
+          item.images.push(this.baseImgUrl + ele)
         })
-        this.listData = this.page == 1 ? data : this.listData.concat(data)
-        console.log(this.listData)
-      }).catch(() => {}).finally(() => {
-        this.$refs.myscroller.finishInfinite(true);
-        this.initLoading = false
       })
-    },
-    //tab切换
-    changeTab(id) {
-      if(id == this.activeId) return
-      this.activeId = id
-      this.page = 1
-      this.getPostList()
     },
     previewImg(item, index) {
       this.previewItem = item
