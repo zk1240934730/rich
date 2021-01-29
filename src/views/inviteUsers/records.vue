@@ -19,7 +19,7 @@
       </div>
       <div class="f1" style="position: relative;">
         <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : ''">
-          <div class="income-item">
+          <div class="income-item" v-for="item in listData" :key="item.id">
             <div class="flex-row flex-row-between">
               <span class="income-item-title">出师奖</span>
               <span class="income-item-right">+20.00</span>
@@ -49,7 +49,8 @@ export default {
   data() {
     return {
       walletInfo: {},
-      utils
+      utils,
+      ajaxUrl: "/api/profit"
     };
   },
   methods: {
