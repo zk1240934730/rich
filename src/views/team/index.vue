@@ -1,88 +1,145 @@
 <template>
   <div id="team">
-    <div class="team-search">
-      <van-icon name="search" size="20" />
-      <span>请输入手机号搜索</span>
-    </div>
-    <h2>我的推荐人</h2>
-    <div class="references">
-      <div class="flex-row">
-        <div class="references-user">
-          <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
-          <img src="../../assets/images/vip/vip_1.png" alt="" />
+      <div class="team-info" :style="stikyStyle" v-if="stikyStyle.position =='fixed'">
+        <div class="team-title">
+          <p>合伙人团队（人）</p>
+          <p class="f1">本月团队总业绩（元）</p>
         </div>
-        <div class="user-info">
-          <p>Safe～项目对接</p>
-          <p>平安综金专员</p>
+        <div class="team-number">
+          <p>0</p>
+          <p class="f1">0.00</p>
+        </div>
+        <div class="team-tips">
+          <p>一级合伙人<span class="number">0人</span></p>
+          <p class="f1">上月团队总业绩<span class="number">0.00元</span></p>
+        </div>
+    </div>
+    <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : ''" style="padding: 1.875rem 1.25rem 1.25rem">
+      <div class="team-search">
+        <van-icon name="search" size="20" />
+        <span>请输入手机号搜索</span>
+      </div>
+      <h2>我的推荐人</h2>
+      <div class="references">
+        <div class="flex-row">
+          <div class="references-user">
+            <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
+            <img src="../../assets/images/vip/vip_1.png" alt="" />
+          </div>
+          <div class="user-info">
+            <p>Safe～项目对接</p>
+            <p>平安综金专员</p>
+          </div>
+        </div>
+        <div class="flex-row" style="align-items: center">
+          <img class="right-wx" src="../../assets/images/wx.png" alt="" />
         </div>
       </div>
-      <div class="flex-row" style="align-items: center">
-        <img class="right-wx" src="../../assets/images/wx.png" alt="" />
+      <h2 class="flex-row flex-row-between">
+        我的团队<van-button type="default" round plain size="mini"
+          >查看有业绩下级</van-button
+        >
+      </h2>
+      <div class="team-info" ref="teamInfo">
+        <div class="team-title">
+          <p>合伙人团队（人）</p>
+          <p class="f1">本月团队总业绩（元）</p>
+        </div>
+        <div class="team-number">
+          <p>0</p>
+          <p class="f1">0.00</p>
+        </div>
+        <div class="team-tips">
+          <p>一级合伙人<span class="number">0人</span></p>
+          <p class="f1">上月团队总业绩<span class="number">0.00元</span></p>
+        </div>
       </div>
-    </div>
-    <h2 class="flex-row flex-row-between">
-      我的团队<van-button type="default" round plain size="mini"
-        >查看有业绩下级</van-button
-      >
-    </h2>
-    <div class="team-info">
-      <div class="team-title">
-        <p>合伙人团队（人）</p>
-        <p class="f1">本月团队总业绩（元）</p>
-      </div>
-      <div class="team-number">
-        <p>0</p>
-        <p class="f1">0.00</p>
-      </div>
-      <div class="team-tips">
-        <p>一级合伙人<span class="number">0人</span></p>
-        <p class="f1">上月团队总业绩<span class="number">0.00元</span></p>
-      </div>
-    </div>
-    <div class="content flex-col">
-        <!-- <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : ''"> -->
-          <div class="team-item" v-for="item in listData" :key="item.id">
-            <div class="team-item-top flex-row">
-              <div class="team-item-top-img">
-                <img src="" alt="">
-                <img :src="require('../../assets/images/vip/vip_1.png')" alt="">
-              </div>
-              <div class="team-item-top-right f1 flex-row flex-row-between flex-col-center">
-                <div class="f1 flex-col">
-                  <span>🐲 cんéก💥 zé℅🔥</span>
-                  <span>疯传592932438</span>
-                </div>
-                <img src="../../assets/images/wx.png" alt="">
-              </div>
+      <div class="content flex-col">
+        <div class="team-item" v-for="item in 10" :key="item.id">
+          <div class="team-item-top flex-row">
+            <div class="team-item-top-img">
+              <img src="" alt="">
+              <img :src="require('../../assets/images/vip/vip_1.png')" alt="">
             </div>
-            <div class="team-item-btm">
-              <div class="flex-row">
-                <span>个人业绩：0.00元</span>
-                <span>团队业绩：0.00元</span>
+            <div class="team-item-top-right f1 flex-row flex-row-between flex-col-center">
+              <div class="f1 flex-col">
+                <span>🐲 cんéก💥 zé℅🔥</span>
+                <span>疯传592932438</span>
               </div>
-              <div>加入时间：2021.01.23</div>
-              <div>团队人数：0</div>
+              <img src="../../assets/images/wx.png" alt="">
             </div>
           </div>
-          <div class="loading-empty flex-col flex-col-center">
-            <no-data v-if="!initLoading && !listData.length"></no-data>
+          <div class="team-item-btm">
+            <div class="flex-row">
+              <span>个人业绩：0.00元</span>
+              <span>团队业绩：0.00元</span>
+            </div>
+            <div>加入时间：2021.01.23</div>
+            <div>团队人数：0</div>
           </div>
+        </div>
+        <div class="loading-empty flex-col flex-col-center">
+          <no-data v-if="!initLoading && !listData.length"></no-data>
+        </div>
       </div>
+    </scroller>
   </div>
 </template>
 
 <script>
-import NoData from '../../components/empty-data.vue'
+import NoData from '../../components/empty-data.vue';
+let interval = {}
 export default {
   name: "team",
   components: {NoData},
   data() {
     return {
-      ajaxUrl: "/api/teamUserList"
+      ajaxUrl: "/api/teamUserList",
+      stikyStyle: {
+        position: 'relative',
+        top: 0
+      }
     };
   },
+  methods: {
+  },
   beforeMount() {
-    this.getListData()
+
+  },
+  mounted() {
+    this.$refs.myscroller.finishInfinite(true);
+    //模拟stick  因为scroll组件关系才这么写的
+    let dom = this.$refs.myscroller.$el.firstChild
+    dom.addEventListener('touchmove', () => {
+      const { y } = this.$refs.teamInfo.getBoundingClientRect();
+      if(y <= 0) {
+        this.$set(this.stikyStyle, 'position', 'fixed')
+      } else {
+        this.$set(this.stikyStyle, 'position', 'relative')
+      }
+    })
+    dom.addEventListener('touchend', () => {
+      if(interval.interval) {
+        interval.count = 0
+        clearInterval(interval.interval)
+      }
+      interval = {
+        interval: setInterval(() => {
+          const { y } = this.$refs.teamInfo.getBoundingClientRect();
+          if(y <= 0) {
+            this.$set(this.stikyStyle, 'position', 'fixed')
+          } else {
+            this.$set(this.stikyStyle, 'position', 'relative')
+          }
+          interval.count ++
+          if(interval.count >= 10) {
+            interval.count = 0
+            clearInterval(interval.interval)
+          }
+        }, 100),
+        count: 0
+      }
+    })
   }
 };
 </script>
