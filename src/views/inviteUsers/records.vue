@@ -14,13 +14,23 @@
     </div>
     <div class="content">
       <div class="tabs">
-        <div class="tab-item active">收入明细</div>
+        <div class="tab-item">收入明细</div>
         <div class="tab-item">提现记录</div>
       </div>
-      <div class="f1" style="position: relative">
-        <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : '没有记录'">
+      <div class="f1" style="position: relative;">
+        <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : ''">
+          <div class="income-item">
+            <div class="flex-row flex-row-between">
+              <span class="income-item-title">出师奖</span>
+              <span class="income-item-right">+20.00</span>
+            </div>
+            <div class="income-item-bottom">
+              <span>2020-12-28 14:53:59</span>
+              <span>一级：JspaavnhZ</span>
+            </div>
+          </div>
           <div class="loading-empty flex-col flex-col-center">
-            <no-data v-if="!initLoading && !listData.length"></no-data>
+            <no-data v-if="!initLoading && !listData.length" :btm-show="true" btn-text="信贷服务推广" @emitClick="emitClick"></no-data>
           </div>
         </scroller>
       </div>
@@ -156,6 +166,37 @@ export default {
             left: 50%;
             transform: translateX(-50%);
           }
+        }
+      }
+    }
+    .income-item {
+      border-bottom: 1px solid rgba(218,224,234,.5);
+      padding: 1.25rem;
+      &-title {
+        font-weight: 700;
+        font-size: .875rem;
+        color: #101010;
+        line-height: .875rem;
+      }
+      &-right {
+        color: #fa5050;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        align-content: center;
+        margin-top: .0625rem;
+        font-weight: 700;
+      }
+      &-bottom {
+        font-size: .75rem;
+        color: #5a6981;
+        line-height: .75rem;
+        margin-top: .225rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        span:last-child {
+          margin-left: .9375rem;
         }
       }
     }
