@@ -7,51 +7,45 @@
           round
           width="3.125rem"
           height="3.125rem"
-          :src="baseImgUrl + userInfo.avatar"
+          :src="userInfo.avatar && userInfo.avatar.indexOf('http') == -1 ? baseImgUrl + userInfo.avatar : userInfo.avatar"
         />
         <img
           :src="
-            require(`../../assets/images/vip/vip_${userInfo.user_level_id}.png`)
+            require(`../../assets/images/vip/vip_${teamLevel.level || 1}.png`)
           "
           id="vip-level-img"
           alt=""
         />
       </div>
       <div class="user-info">
-        <p class="name">{{ userInfo.nickName || "-" }}</p>
-        <p class="phone">{{ userInfo.username || userInfo.mobile || "-" }}</p>
+        <p class="name">{{ userInfo.mobile || "-" }}</p>
+        <p class="phone">{{ userInfo.username || userInfo.nickname || "-" }}</p>
       </div>
     </div>
     <!-- tab操作 -->
     <div class="tabs flex-row">
-      <router-link
-        :to="item.link"
-        v-for="(item, index) in tabList"
-        :key="index"
-      >
-        <div class="tabs-item flex-col">
-          <van-image
-            round
-            width="1.4175rem"
-            height="1.4175rem"
-            :src="item.src"
-          />
-          <span>{{ item.name }}</span>
-        </div></router-link
-      >
+      <div class="tabs-item flex-col" @click="navigate(item.link)" v-for="(item, index) in tabList" :key="index">
+        <van-image
+          round
+          width="1.4175rem"
+          height="1.4175rem"
+          :src="item.src"
+        />
+        <span>{{ item.name }}</span>
+      </div>
     </div>
     <!-- 邀请信息与团队 -->
     <div class="invate-team">
       <router-link to="/inviteUsers">
         <div class="invate-team-card">
           <p class="title">邀请用户(人)</p>
-          <p class="message">0</p>
+          <p class="message">{{count || 0}}</p>
         </div>
       </router-link>
       <router-link to="/team">
         <div class="invate-team-card">
-          <p class="title">合伙人团队(人)</p>
-          <p class="message">0</p>
+          <p class="title">团队(人)</p>
+          <p class="message">{{teamUserCount || 0}}</p>
         </div>
       </router-link>
     </div>
@@ -100,6 +94,7 @@
             alt="图片"
             width="100%"
             height="4.6875rem"
+            @click="openUrl(item.url)"
         /></van-swipe-item>
       </van-swipe>
     </div>
@@ -121,7 +116,7 @@
 <script>
 import ShareMask from "../../components/share-mask";
 import LevelBg from '../../components/level-bg';
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import utils from "../../utils/index.js";
 export default {
   name: "index",
@@ -140,7 +135,7 @@ export default {
         },
         {
           src: require("../../assets/images/index/coupon.png"),
-          name: "助力券",
+          name: "商城",
           link: "",
         },
         {
@@ -155,11 +150,14 @@ export default {
       teamLevel: {},
       shareMaskShow: false,
       btnText: '',
+      teamUserCount: 0, //团队总用户
+      count: 0, //邀请用户总数
       rewardRuleImage: '',//奖励规则图片
       wxFollowImage: '' //公众号图片
     };
   },
   methods: {
+    ...mapActions(["GET_USER_INFO"]),
     //获取轮播
     getBanner() {
       this.$get("/api/banner").then((res) => {
@@ -191,6 +189,28 @@ export default {
       this.$get("/api/wxFollowImage").then((res) => {
         this.wxFollowImage = res.data.content;
       });
+    },
+    //获取团队总用户
+    getTeamUser() {
+      this.$get("/api/teamUser").then((res) => {
+        this.teamUserCount = res.data.teamUserCount;
+      });
+    },
+    //邀请用户人数
+    getInviteUserCount() {
+      this.$get("/api/inviteUserCount").then((res) => {
+        this.count = res.data.count
+      });
+    },
+    navigate(url) {
+      if(!url) {
+        this.$toast("正在开发中")
+        return
+      }
+      this.$router.push(url)
+    },
+    openUrl(url) {
+      window.location.href = url
     }
   },
   created() {
@@ -199,7 +219,10 @@ export default {
     this.getWallet();
     this.getRwardRuleImage()
     this.getWxFollowImage()
-  }
+    this.getTeamUser()
+    this.getInviteUserCount()
+    this.GET_USER_INFO()
+  },
 };
 </script>
 

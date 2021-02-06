@@ -3,11 +3,12 @@ export default {
         return {
             baseImgUrl: 'http://tuiyouqian.wudaojz.com',
             page: 1,
-            pageSize: 10,
+            pageSize: 20,
             initLoading: false,//初始加载
             hasMoreData: true,//是否有更多数据
             listData: [],
-            tabIndex: 0
+            tabIndex: 0,
+            isAjax: true // ajax请求进行中
         }
     },
     created() {
@@ -32,10 +33,12 @@ export default {
                 this.initLoading = true
                 this.listData = []
             }
+            let currentIndex = this.tabIndex
             this.$get(this.ajaxUrl, Object.assign({
                 page: this.page,
                 hideLoading: true
             }, this.params)).then(res => {
+                if(currentIndex != this.tabIndex) return
                 let data = res.data.data
                 if (data.length < this.pageSize) {
                     this.hasMoreData = false
@@ -43,8 +46,10 @@ export default {
                 this.formatData && typeof this.formatData == 'function' && this.formatData(data);
                 this.listData = this.page == 1 ? data : this.listData.concat(data);
             }).catch(() => { }).finally(() => {
+                if(currentIndex != this.tabIndex) return
                 this.$refs.myscroller && this.$refs.myscroller.finishInfinite(true);
                 this.initLoading = false
+                this.isAjax = false
             })
         },
         //复制

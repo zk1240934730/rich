@@ -9,7 +9,7 @@
         <div class="list-item" v-for="item in listData" :key="item.id">
           <div class="time">
             <span class="date" v-if="!dateFormat(item.created_at).month">{{dateFormat(item.created_at).day}}</span>
-            <span class="date" v-else style="color: #fa5050; font-size: .875rem;font-family: DXMfont-Regular;font-weight: 400"><span style="font-size: 1.125rem;font-weight: 600;color: #fa5050;font-family: DXMfont-Bold;">{{dateFormat(item.created_at).month}}</span>{{dateFormat(item.created_at).day}}月</span>
+            <span class="date" v-else style="color: #fa5050; font-size: .875rem;font-family: DXMfont-Regular;font-weight: 400"><span style="font-size: 1.125rem;font-weight: 600;color: #fa5050;font-family: DXMfont-Bold;">{{dateFormat(item.created_at).day}}</span>{{dateFormat(item.created_at).month}}月</span>
             <span class="time-text">{{dateFormat(item.created_at).hour}}</span>
           </div>
           <div class="center-content" v-html="item.content"></div>

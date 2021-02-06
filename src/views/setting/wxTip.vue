@@ -7,13 +7,13 @@
     <div class="main">
       <div class="title">如何绑定?</div>
       <div class="content">
-        <div class="content-title">1.关注「推有钱」公众号</div>
+        <div class="content-title">1.关注「推小花」公众号</div>
         <div class="content-main1">
           <div class="left">
             <img src="../../assets/images/setting/qrcode.jpg" alt="" />
           </div>
           <div class="right">
-            <p>·微信内搜索「推有钱」；</p>
+            <p>·微信内搜索「推小花」；</p>
             <p>·或截图保存二维码，微信内识别打开。</p>
           </div>
         </div>

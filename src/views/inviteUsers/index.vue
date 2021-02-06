@@ -6,7 +6,7 @@
     <div class="content flex-col">
       <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : ''">
         <template v-for="item in inviteUserRemark">
-          <div class="tips" :key="item.name" v-if="item.name == tabList[tabIndex].name">
+          <div class="tips" :key="item.name" v-if="item.name == tabList[tabIndex].name && tabIndex != 0">
             <!-- 全部 -->
             <template v-if="tabIndex == 0">
               <div class="tips-title flex-row">
@@ -27,7 +27,7 @@
                 <template v-else>
                   <span>{{item.content.status.name}}：</span>
                   <p style="display: inline">{{item.content.status.content}}</p>
-                  <router-link to="/orderList"><span style="float: right">收入记录</span></router-link>
+                  <router-link to="/records"><span style="float: right">收入记录</span></router-link>
                 </template>
               </div>
               <div class="tips-title" style="margin-top: .3125rem;">
@@ -42,10 +42,10 @@
           </div>
         </template>
         <div class="user-item flex-row" v-for="item in listData" :key="item.id">
-          <img :src="baseImgUrl + item.invite_user.avatar" alt="">
+          <img :src="item.invite_user.avatar && item.invite_user.avatar.indexOf('http') == -1 ? baseImgUrl + item.invite_user.avatar : item.invite_user.avatar" alt="">
           <div class="f1">
             <div class="user-item-top flex-row flex-row-between flex-col-center">
-              <span class="f2">{{item.invite_user.username}}</span>
+              <span class="f2">{{item.invite_user.mobile}}</span>
               <span class="f1">{{item.status | statusFormat}}</span>
             </div>
             <div class="user-item-btm flex-row flex-row-between flex-col-center">

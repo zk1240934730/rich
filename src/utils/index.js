@@ -54,7 +54,7 @@ const dateFormat = (date) => {
         currentYear = currentDate.getFullYear(),
         currentMonth = currentDate.getMonth() + 1,
         currentDay = currentDate.getDate(),
-        oldDate = new Date(date),
+        oldDate = new Date(date.replace(/-/g,"/")),
         oldYear = oldDate.getFullYear(),
         oldMonth = oldDate.getMonth() + 1,
         oldDay = oldDate.getDate(),
@@ -72,8 +72,8 @@ const dateFormat = (date) => {
         }
     } else {//不是同一天
         formatObj = {
-            day: oldDay,
-            month: oldMonth,
+            day: oldDay < 10 ? '0' + oldDay : oldDay,
+            month: oldMonth < 10 ? '0' + oldMonth : oldMonth,
             hour: oldDate.getHours() + '点' + oldDate.getMinutes() + '分'
         }
     }
@@ -117,10 +117,15 @@ function getDateDiff(timestamp) {
         result = "刚刚";
     return result;
 }
+const isWeiXin = () => {
+    var ua = window.navigator.userAgent.toLowerCase();
+    return ua.match(/MicroMessenger/i) == 'micromessenger';
+} 
 export default {
    checkPhone,
     numberFormat,
     getMonth,
     checkWxNum,
-    dateFormat
+    dateFormat,
+    isWeiXin
 }

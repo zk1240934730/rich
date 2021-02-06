@@ -4,7 +4,7 @@
       <div class="title">可提现收入（元）</div>
       <div class="numBox">
         <div class="num">{{utils.numberFormat(walletInfo.cashProfit, 2)}}</div>
-        <div class="btn disable">提现</div>
+        <div class="btn" :class="walletInfo.cashProfit == '0' ? 'disable' : ''" @click="goCashOut">提现</div>
       </div>
       <div class="sh">
         <span class="num fdc">{{utils.numberFormat(walletInfo.checkProfit, 2)}}</span>元审核中（奖励需<span class="num fdc"
@@ -14,23 +14,35 @@
     </div>
     <div class="content">
       <div class="tabs">
-        <div class="tab-item">收入明细</div>
-        <div class="tab-item">提现记录</div>
+        <div class="tab-item" :class="type == 'profit' ? 'active' : ''" @click="chageNavTab('profit')">收入明细</div>
+        <div class="tab-item" :class="type == 'cash' ? 'active' : ''" @click="chageNavTab('cash')">提现记录</div>
       </div>
       <div class="f1" style="position: relative;">
-        <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : ''">
+        <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : '没有记录'">
           <div class="income-item" v-for="item in listData" :key="item.id">
-            <div class="flex-row flex-row-between">
-              <span class="income-item-title">出师奖</span>
-              <span class="income-item-right">+20.00</span>
-            </div>
-            <div class="income-item-bottom">
-              <span>2020-12-28 14:53:59</span>
-              <span>一级：JspaavnhZ</span>
-            </div>
+            <template v-if="type == 'profit'">
+              <div class="flex-row flex-row-between">
+                <span class="income-item-title">{{item.raward_name}}</span>
+                <span class="income-item-right">+{{utils.numberFormat(item.profit, 2)}}</span>
+              </div>
+              <div class="income-item-bottom">
+                <span>{{item.created_at}}</span>
+                <span>一级：{{item.user.nickname}}</span>
+              </div>
+            </template>
+            <template v-else>
+              <div class="flex-row flex-row-between">
+                <span class="income-item-title">{{item.account && item.account.type || '-'}}</span>
+                <span class="income-item-right">+{{utils.numberFormat(item.money, 2)}}</span>
+              </div>
+              <div class="income-item-bottom">
+                <span>{{item.created_at}}</span>
+                <span>一级：{{item.nickname || '-'}}</span>
+              </div>
+            </template>
           </div>
           <div class="loading-empty flex-col flex-col-center">
-            <no-data v-if="!initLoading && !listData.length" :btm-show="true" btn-text="信贷服务推广" @emitClick="emitClick"></no-data>
+            <no-data v-if="!initLoading && !listData.length"></no-data>
           </div>
         </scroller>
       </div>
@@ -50,7 +62,8 @@ export default {
     return {
       walletInfo: {},
       utils,
-      ajaxUrl: "/api/profit"
+      ajaxUrl: "/api/profit",
+      type: 'profit'
     };
   },
   methods: {
@@ -60,6 +73,25 @@ export default {
         this.walletInfo = res.data;
       });
     },
+    //切换tab
+    chageNavTab(type) {
+      if(type == this.type) return
+      this.type = type
+      this.ajaxUrl = '/api/' + type
+      this.hasMoreData = true
+      this.page = 1
+      this.listData = []
+      this.$refs.myscroller.finishInfinite(false);
+    },
+    //提供给子组件调用
+    emitClick() {
+      this.shareMaskShow = true; 
+      this.$store.commit('SET_SHARE_TYPE', 'borrow')
+    },
+    goCashOut() {
+      if(this.walletInfo.cashProfit == '0') return
+      this.$router.push("/cashOut")
+    }
   },
   beforeMount() {
     this.getWallet()

@@ -14,8 +14,8 @@
           <p class="f1">上月团队总业绩<span class="number">0.00元</span></p>
         </div>
     </div>
-    <scroller :on-infinite="infinite" ref="myscroller" :noDataText="listData.length ? '没有更多数据' : ''" style="padding: 1.875rem 1.25rem 1.25rem">
-      <div class="team-search">
+    <scroller :on-infinite="infinite" ref="myscroller" :noDataText="hasMoreData ? '' : '没有更多数据'" style="padding: 1.875rem 1.25rem 1.25rem">
+      <div class="team-search" @click="searchShow = true">
         <van-icon name="search" size="20" />
         <span>请输入手机号搜索</span>
       </div>
@@ -23,21 +23,20 @@
       <div class="references">
         <div class="flex-row">
           <div class="references-user">
-            <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
-            <img src="../../assets/images/vip/vip_1.png" alt="" />
+            <img :src="userInfo.avatar && userInfo.avatar.indexOf('http') == -1 ? baseImgUrl + userInfo.avatar : userInfo.avatar" alt="" />
+            <img :src="require('../../assets/images/vip/vip_' + (teamLevel.level || 1) + '.png')" alt="" />
           </div>
           <div class="user-info">
-            <p>Safe～项目对接</p>
-            <p>平安综金专员</p>
+            <p>{{userInfo.mobile || '-'}}</p>
+            <p>{{userInfo.username || userInfo.nickname || userInfo.mobile || '-'}}</p>
           </div>
         </div>
-        <div class="flex-row" style="align-items: center">
+        <div class="flex-row" style="align-items: center" :data-clipboard-text="userInfo.wx_id || userInfo.mobile" id="info_wx" @click="copy('info_wx')">
           <img class="right-wx" src="../../assets/images/wx.png" alt="" />
         </div>
       </div>
       <h2 class="flex-row flex-row-between">
-        我的团队<van-button type="default" round plain size="mini"
-          >查看有业绩下级</van-button
+        我的团队<van-button type="default" round plain size="mini" @click="type == 'all' ? type = 'yes' : type = 'all'">{{type == 'all' ? '查看有业绩下级' : '查看所有下级'}}</van-button
         >
       </h2>
       <div class="team-info" ref="teamInfo">
@@ -46,68 +45,138 @@
           <p class="f1">本月团队总业绩（元）</p>
         </div>
         <div class="team-number">
-          <p>0</p>
-          <p class="f1">0.00</p>
+          <p>{{teamUser.teamUserCount || 0}}</p>
+          <p class="f1">{{utils.numberFormat(teamReward.teamMonthAllProfit)}}</p>
         </div>
         <div class="team-tips">
-          <p>一级合伙人<span class="number">0人</span></p>
-          <p class="f1">上月团队总业绩<span class="number">0.00元</span></p>
+          <p>一级合伙人<span class="number">{{teamUser.teamUser1Count || 0}}人</span></p>
+          <p class="f1">上月团队总业绩<span class="number">{{utils.numberFormat(teamReward.teamPreMonthAllProfit)}}元</span></p>
         </div>
       </div>
-      <div class="content flex-col">
-        <div class="team-item" v-for="item in 10" :key="item.id">
-          <div class="team-item-top flex-row">
-            <div class="team-item-top-img">
-              <img src="" alt="">
-              <img :src="require('../../assets/images/vip/vip_1.png')" alt="">
-            </div>
-            <div class="team-item-top-right f1 flex-row flex-row-between flex-col-center">
-              <div class="f1 flex-col">
-                <span>🐲 cんéก💥 zé℅🔥</span>
-                <span>疯传592932438</span>
-              </div>
-              <img src="../../assets/images/wx.png" alt="">
-            </div>
-          </div>
-          <div class="team-item-btm">
-            <div class="flex-row">
-              <span>个人业绩：0.00元</span>
-              <span>团队业绩：0.00元</span>
-            </div>
-            <div>加入时间：2021.01.23</div>
-            <div>团队人数：0</div>
-          </div>
-        </div>
+      <div class="content flex-col" style="background: #fff;margin-top: -0.575rem">
+        <template class="team-item" v-for="item in showList" >
+          <team-item :key="item.id" :detail-info="item"></team-item>
+        </template>
         <div class="loading-empty flex-col flex-col-center">
-          <no-data v-if="!initLoading && !listData.length"></no-data>
+          <no-data v-if="!initLoading && !showList.length"></no-data>
         </div>
       </div>
     </scroller>
+    <search :search-show="searchShow" :all-data="allList"></search>
   </div>
 </template>
 
 <script>
 import NoData from '../../components/empty-data.vue';
+import utils from "../../utils/index.js";
+import Search from './search'
+import TeamItem from './components/team-item'
+import { mapState } from 'vuex';
 let interval = {}
 export default {
   name: "team",
-  components: {NoData},
+  components: {NoData, Search, TeamItem},
   data() {
     return {
       ajaxUrl: "/api/teamUserList",
-      stikyStyle: {
+      stikyStyle: { //吸顶属性
         position: 'relative',
         top: 0
-      }
+      },
+      searchShow: false,
+      utils,
+      teamUser: {},
+      teamReward: {},
+      teamLevel: {},
+      allList: [], //所有业绩下级
+      yesList: [], //有业绩下级
+      showList: [], //展示的数据,默认所有
+      isMounted: false, //初始化请求接口，后续走前端分页查询
+      type: "all" //all 查看所有   yes  查看有业绩的下级
     };
   },
+  watch: {
+    type(v) {
+      this.page = 1
+      this.hasMoreData = true
+      if(v == 'all') {
+        this.showList = this.allList.slice(0, this.pageSize)
+      }
+      if(v == 'yes') {
+        this.showList = this.yesList.slice(0, this.pageSize)
+      }
+      if(this.showList.length < this.pageSize) {
+        this.hasMoreData = false
+      }
+    }
+  },
+  computed: {
+    ...mapState(["userInfo"])
+  },
   methods: {
+    // 上拉加载数据
+    infinite() {
+      if (!this.hasMoreData) {
+        this.$refs.myscroller && this.$refs.myscroller.finishInfinite(true);
+        return
+      }
+      if(this.isMounted) {
+        this.page ++;
+        this.pagination();
+      } else {
+        this.getListData()
+      }
+      this.isMounted = true
+    },
+    getListData() {
+      if (this.page == 1) {
+        this.initLoading = true
+      }
+      this.$get(this.ajaxUrl, {
+        hideLoading: true
+      }).then(res => {
+        let data = res.data
+        this.allList = data.yes.concat(data.no)
+        this.showList = this.allList.slice(0, this.pageSize)
+        if(this.showList.length < this.pageSize) {
+          this.hasMoreData = false;
+        }
+        this.yesList = data.yes
+      }).catch(() => { }).finally(() => {
+        this.initLoading = false;
+        this.$refs.myscroller.finishInfinite(true);
+      })
+    },
+    //前端分页
+    pagination() {
+      let arr = this.allList.slice(this.pageSize * (this.page - 1 ), this.pageSize * this.page);
+      this.showList = this.showList.concat(arr);
+      this.$refs.myscroller.finishInfinite(true);
+      if(arr.length < this.pageSize) {
+        this.hasMoreData = false;
+      }
+    },
+    //获取团队用户
+    getTeamUser() {
+      this.$get("/api/teamUser").then(res => {
+        this.teamUser = res.data
+      })
+    },
+    //团队总业绩
+    getTeamReward() {
+      this.$get("/api/teamReward").then(res => {
+        this.teamReward = res.data
+        this.teamLevel = this.teamReward.teamLevel
+      })
+    }
   },
   beforeMount() {
-
+    this.getTeamUser()
+    this.getTeamReward()
   },
   mounted() {
-    this.$refs.myscroller.finishInfinite(true);
+    this.$refs.myscroller.finishInfinite(false);
+    // this.getListData()
     //模拟stick  因为scroll组件关系才这么写的
     let dom = this.$refs.myscroller.$el.firstChild
     dom.addEventListener('touchmove', () => {
@@ -216,7 +285,7 @@ export default {
       margin-left: 0.8125rem;
       overflow: hidden;
       > p:first-child {
-        padding-top: 0.625rem;
+        padding-top: 0.225rem;
         padding-bottom: 0.25rem;
         width: 100%;
         font-family: PingFangSC-Semibold;
@@ -266,81 +335,6 @@ export default {
     .team-tips {
       font-size: 0.75rem;
       color: #ffebeb;
-    }
-  }
-  .team-item {
-    width: 18.4375rem;
-    overflow: hidden;
-    margin: 1.25rem auto 0;
-    padding-bottom: 1.25rem;
-    border-bottom: 1px solid rgba(218,224,234,.5);
-    &-top {
-      height: 2.5rem;
-      &-img {
-        width: 2.5rem;
-        height: 2.5rem;
-        position: relative;
-        img:first-child {
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-        }
-        img:last-child {
-          position: absolute;
-          bottom: 0;
-          right: -.125rem;
-          width: 1.3125rem;
-          height: 1.0625rem;
-        }
-      }
-      &-right {
-        margin-left: .8125rem;
-        img {
-          width: 1.25rem;
-          height: 1.25rem;
-          margin-right: .3125rem;
-        }
-        > div {
-          overflow: hidden;
-          padding-bottom: .25rem;
-          font-size: .75rem;
-          font-weight: 400;
-          color: #333;
-          > span:first-child {
-            width: 100%;
-            font-family: PingFangSC-Semibold;
-            font-size: .875rem;
-            font-weight: 700;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-        }
-      }
-    }
-    &-btm {
-      width: 100%;
-      margin-top: .875rem;
-      background-image: linear-gradient(103deg,rgba(251,234,222,.3),rgba(255,247,240,.3) 99%);
-      border-left: .125rem solid #ffe9db;
-      padding: .875rem 0 .75rem .75rem;
-      > div:first-child {
-        font-family: PingFangSC-Medium;
-        font-size: .8125rem;
-        color: #222;
-        text-align: left;
-        font-weight: 700;
-        margin-bottom: .625rem;
-        display: flex;
-        justify-content: space-between;
-      }
-      div {
-        font-family: FDCfont-Regular;
-        font-size: .6875rem;
-        color: #5a6981;
-        letter-spacing: 0;
-        line-height: 1.0625rem;
-      }
     }
   }
 }

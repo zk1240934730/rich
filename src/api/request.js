@@ -11,6 +11,8 @@ let loading = null;
  */
 axios.interceptors.request.use(config => {
     let hideLoading = config.params && config.params.hideLoading
+    !config.params && (config.params = {})
+    config.params.token = store.state.userInfo.api_token
     !hideLoading && (loading = Toast.loading({
         message: '加载中...',
         forbidClick: true,

@@ -32,12 +32,12 @@
           <div class="tr th flex-row">
             <span class="f1">月总业绩m(元)</span>
             <span class="f1">团队等级</span>
-            <span class="f1">分佣比例</span>
+            <span class="f1">奖励系数</span>
           </div>
           <div class="tr flex-row" v-for="item in teamLevelList" :key="item.id">
             <span class="f1">{{item.level_desc}}</span>
             <span class="f1">{{item.level_name}}</span>
-            <span class="f1">10%</span>
+            <span class="f1">{{item.rate}}%</span>
           </div>
         </div>
       </div>

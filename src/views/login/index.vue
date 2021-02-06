@@ -34,23 +34,20 @@
             <p class="pass-msg-generalMsgWrapper pass-msg-generalError">
               {{ formMsg }}
             </p>
-            <button
+            <div
               class="submit-btn"
               @click="registerLogin"
               :disabled="isLogin"
-            >
-              {{ isLogin ? "登录中..." : "免费注册/登录" }}
-            </button>
+            >{{ isLogin ? "登录中..." : "免费注册/登录" }}</div>
           </form>
           <!-- 前往第三方h5登录 -->
-          <div class="h5-login">账号密码登录</div>
+          <div class="h5-login"></div>
+          <!-- <div class="h5-login">账号密码登录</div> -->
           <!-- 相关协议 -->
           <div class="form-aggrement">
-            <span>同意&nbsp; &nbsp;&nbsp;&nbsp;</span>
+            <span style="margin-right: 0.5rem">同意</span>
             <p class="f1">
-              <span> 有钱花用户服务协议 </span>、<span> 隐私政策 </span> 和
-              <span> 用户信息授权协议 </span>；同时同意
-              <span> 百度用户协议 </span>、<span>隐私政策</span>
+              <span @click="goNotice(item)" v-for="(item, index) in notices" :key="index">{{item.title}}{{index != notices.length - 1 ? '、' : ''}}</span>
             </p>
           </div>
         </div>
@@ -72,8 +69,11 @@ export default {
       countDownInterval: null,
       isLogin: false,
       formMsg: "",
-      phone: "18326024918",
-      code: "1234",
+      phone: "",
+      code: "",
+      invite_code: "",//邀请码
+      successLogin: false,
+      notices: []
     };
   },
   watch: {
@@ -98,6 +98,7 @@ export default {
         phone: this.phone,
       })
         .then(() => {
+          this.formMsg = "动态密码发送成功";
           this.countDown--;
           this.countDownInterval = setInterval(() => {
             this.countDown--;
@@ -114,6 +115,10 @@ export default {
     },
     //验证码登录
     registerLogin() {
+      if (!utils.checkPhone(this.phone)) {
+        this.formMsg = "手机号格式错误";
+        return;
+      }
       if (!this.code) {
         this.formMsg = "请输入动态验证码";
         return;
@@ -122,11 +127,16 @@ export default {
       this.$get("/api/login", {
         phone: this.phone,
         code: this.code,
+        invite_code: this.invite_code
       })
         .then((res) => {
           this.SET_USER_INFO(res.data)
+          if(utils.isWeiXin()) {
+            this.wxAuth()
+            return
+          }
           this.$toast.success("登录成功")
-          this.navigate('/index', 2000)
+          this.navigate('/index', 1000)
         })
         .catch(() => {
           this.formMsg = "验证码已失效，请重新获取";
@@ -135,10 +145,35 @@ export default {
           this.isLogin = false;
         });
     },
+    wxAuth() {
+      window.location.href = window.location.origin + '/api/wxAuth?phone=' + this.phone + '&sms=' + this.code
+    },
+    //获取相关协议
+    loginNotice() {
+      this.$get("/api/loginNotice", {
+        hideLoading: true
+      }).then(res => {
+        this.notices = res.data
+      })
+    },
+    //进入协议页面
+    goNotice(data) {
+      this.$router.push({
+        path:'/notice',
+        query:{
+          notice: JSON.stringify(data)
+        }
+      })
+    }
+  },
+  created() {
+    this.invite_code = this.$route.query.invite_code
+    this.loginNotice()
   },
   mounted() {
-  }
-};
+
+  },
+}
 </script>
 
 <style scoped lang="scss">
@@ -208,7 +243,7 @@ export default {
           display: flex;
           align-items: center;
           input {
-            height: 1.5625rem;
+            height: 100%;
           }
         }
         .password {
@@ -242,6 +277,8 @@ export default {
           margin-top: 0.46875rem;
           margin-left: 50%;
           transform: translateX(-50%);
+          justify-content: center;
+          padding-left: 0!important;
         }
       }
       .h5-login {
@@ -254,17 +291,17 @@ export default {
         font-family: FZLanTingHeiS-R-GB;
         font-weight: 400;
         color: #c50300;
-        // line-height: 3.75rem;
-        &::after {
-          content: "";
-          display: inline-block;
-          width: 0;
-          height: 0;
-          border-top: 0.25rem solid rgba(0, 0, 0, 0);
-          border-bottom: 0.25rem solid rgba(0, 0, 0, 0);
-          border-left: 0.3125rem solid #c50300;
-          margin-left: 0.1875rem;
-        }
+        height: 2.125rem;
+        // &::after {
+        //   content: "";
+        //   display: inline-block;
+        //   width: 0;
+        //   height: 0;
+        //   border-top: 0.25rem solid rgba(0, 0, 0, 0);
+        //   border-bottom: 0.25rem solid rgba(0, 0, 0, 0);
+        //   border-left: 0.3125rem solid #c50300;
+        //   margin-left: 0.1875rem;
+        // }
       }
       .form-aggrement {
         color: #fff;

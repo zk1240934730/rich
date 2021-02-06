@@ -24,7 +24,7 @@ export default new Vuex.Store({
       console.log(store)
     },
     GET_USER_INFO(store) {
-      get("/api/userInfo", {hideLoading: true}).then(res => {
+      return get("/api/userInfo", {hideLoading: true}).then(res => {
         store.commit("SET_USER_INFO", res.data)
       })
     }
