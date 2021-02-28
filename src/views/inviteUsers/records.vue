@@ -23,21 +23,21 @@
             <template v-if="type == 'profit'">
               <div class="flex-row flex-row-between">
                 <span class="income-item-title">{{item.raward_name}}</span>
-                <span class="income-item-right">+{{utils.numberFormat(item.profit, 2)}}</span>
-              </div>
-              <div class="income-item-bottom">
-                <span>{{item.created_at}}</span>
-                <span>一级：{{item.user.nickname}}</span>
-              </div>
-            </template>
-            <template v-else>
-              <div class="flex-row flex-row-between">
-                <span class="income-item-title">{{item.account && item.account.type || '-'}}</span>
                 <span class="income-item-right">+{{utils.numberFormat(item.money, 2)}}</span>
               </div>
               <div class="income-item-bottom">
                 <span>{{item.created_at}}</span>
-                <span>一级：{{item.nickname || '-'}}</span>
+                <span>一级：{{item.one_user_name}}</span>
+              </div>
+            </template>
+            <template v-else>
+              <div class="flex-row flex-row-between">
+                <span class="income-item-title" :style="{ color: colorFormat(item.status)}">{{item.status_msg || '-'}}</span>
+                <span class="income-item-right" :style="{ color: colorFormat(item.status)}">{{item.status != 3 ? '+' : ''}}{{utils.numberFormat(item.money, 2)}}</span>
+              </div>
+              <div class="income-item-bottom">
+                <span>{{item.created_at}}</span>
+                <!-- <span>一级：{{item.nickname || '-'}}</span> -->
               </div>
             </template>
           </div>
@@ -66,7 +66,19 @@ export default {
       type: 'profit'
     };
   },
+  filters: {
+    
+  },
   methods: {
+    colorFormat(v) {
+      let color = ""
+      switch(v) {
+        case 1: color = '#ff9900'; break;
+        case 2: color = '#19be6b'; break;
+        case 3: color = '#fa3534'; break;
+      }
+      return color;
+    },
     // 获取用户钱包及收入
     getWallet() {
       this.$get("/api/wallet").then((res) => {
@@ -77,6 +89,7 @@ export default {
     chageNavTab(type) {
       if(type == this.type) return
       this.type = type
+      this.tabIndex = type
       this.ajaxUrl = '/api/' + type
       this.hasMoreData = true
       this.page = 1
@@ -228,9 +241,9 @@ export default {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        span:last-child {
-          margin-left: .9375rem;
-        }
+        // span:last-child {
+        //   margin-left: .9375rem;
+        // }
       }
     }
   }

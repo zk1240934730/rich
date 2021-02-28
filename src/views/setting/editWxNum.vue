@@ -46,9 +46,10 @@ export default {
         wx_id: this.userInfo.wx_id
       }).then(res => {
         this.$toast(res.msg)
-        this.navigate('/setting', 2000, () => {
+        setTimeout(() => {
           this.GET_USER_INFO()
-        } )
+          this.$router.go(-1)
+        }, 2000);
       })
     },
     clear() {
@@ -56,7 +57,9 @@ export default {
       this.errorTip = ""
     }
   },
-  mounted() {},
+  mounted() {
+
+  },
 };
 </script>
 

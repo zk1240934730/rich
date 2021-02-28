@@ -40,6 +40,7 @@ export default {
             }, this.params)).then(res => {
                 if(currentIndex != this.tabIndex) return
                 let data = res.data.data
+        
                 if (data.length < this.pageSize) {
                     this.hasMoreData = false
                 }

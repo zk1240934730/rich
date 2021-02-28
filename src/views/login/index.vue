@@ -82,6 +82,7 @@ export default {
         this.formMsg = "";
         this.phone = "";
         this.code = "";
+        this.isLogin = false
       }
     },
   },
@@ -160,7 +161,7 @@ export default {
     goNotice(data) {
       this.$router.push({
         path:'/notice',
-        query:{
+        query: {
           notice: JSON.stringify(data)
         }
       })

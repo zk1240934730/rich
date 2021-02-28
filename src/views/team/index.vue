@@ -6,12 +6,12 @@
           <p class="f1">本月团队总业绩（元）</p>
         </div>
         <div class="team-number">
-          <p>0</p>
-          <p class="f1">0.00</p>
+          <p>{{teamUser.teamUserCount || 0}}</p>
+          <p class="f1">{{utils.numberFormat(teamReward.teamMonthAllProfit)}}</p>
         </div>
         <div class="team-tips">
-          <p>一级合伙人<span class="number">0人</span></p>
-          <p class="f1">上月团队总业绩<span class="number">0.00元</span></p>
+          <p>一级合伙人<span class="number">{{teamUser.teamUser1Count || 0}}人</span></p>
+          <p class="f1">上月团队总业绩<span class="number">{{utils.numberFormat(teamReward.teamPreMonthAllProfit)}}元</span></p>
         </div>
     </div>
     <scroller :on-infinite="infinite" ref="myscroller" :noDataText="hasMoreData ? '' : '没有更多数据'" style="padding: 1.875rem 1.25rem 1.25rem">
@@ -23,12 +23,12 @@
       <div class="references">
         <div class="flex-row">
           <div class="references-user">
-            <img :src="userInfo.avatar && userInfo.avatar.indexOf('http') == -1 ? baseImgUrl + userInfo.avatar : userInfo.avatar" alt="" />
-            <img :src="require('../../assets/images/vip/vip_' + (teamLevel.level || 1) + '.png')" alt="" />
+            <img :src="inviteUser.avatar && inviteUser.avatar.indexOf('http') == -1 ? baseImgUrl + inviteUser.avatar : inviteUser.avatar" alt="" />
+            <img :src="require('../../assets/images/vip/vip_' + (inviteUser.level || 1) + '.png')" alt="" />
           </div>
           <div class="user-info">
-            <p>{{userInfo.mobile || '-'}}</p>
-            <p>{{userInfo.username || userInfo.nickname || userInfo.mobile || '-'}}</p>
+            <p>{{inviteUser.username || inviteUser.nickname || inviteUser.mobile || '-'}}</p>
+            <p>{{inviteUser.description || '-'}}</p>
           </div>
         </div>
         <div class="flex-row" style="align-items: center" :data-clipboard-text="userInfo.wx_id || userInfo.mobile" id="info_wx" @click="copy('info_wx')">
@@ -88,6 +88,7 @@ export default {
       teamUser: {},
       teamReward: {},
       teamLevel: {},
+      inviteUser: {},
       allList: [], //所有业绩下级
       yesList: [], //有业绩下级
       showList: [], //展示的数据,默认所有
@@ -168,11 +169,17 @@ export default {
         this.teamReward = res.data
         this.teamLevel = this.teamReward.teamLevel
       })
+    },
+    myPromoter() {
+      this.$get("/api/myPromoter").then(res => {
+        this.inviteUser = res.data
+      })
     }
   },
   beforeMount() {
-    this.getTeamUser()
-    this.getTeamReward()
+    this.getTeamUser();
+    this.getTeamReward();
+    this.myPromoter();
   },
   mounted() {
     this.$refs.myscroller.finishInfinite(false);

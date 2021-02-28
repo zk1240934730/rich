@@ -27,8 +27,8 @@
       <div class="tabs-item flex-col" @click="navigate(item.link)" v-for="(item, index) in tabList" :key="index">
         <van-image
           round
-          width="1.4175rem"
-          height="1.4175rem"
+          width="1.8175rem"
+          height="1.8175rem"
           :src="item.src"
         />
         <span>{{ item.name }}</span>
@@ -75,7 +75,7 @@
           >
         </div>
         <div class="month">
-          {{ utils.getMonth() }}月总业绩(元)<span>{{utils.numberFormat(teamReward.teamAllProfit, 2)}}</span>
+          {{ utils.getMonth() }}月总业绩(元)<span>{{utils.numberFormat(teamReward.teamProfit, 2)}}</span>
         </div>
         <!-- teamReward.teamLevel.lack_money -->
         <div class="rest">
@@ -110,17 +110,20 @@
       <div class="f1" @click="shareMaskShow = true; $store.commit('SET_SHARE_TYPE', 'invite');btnText='我已了解，继续招募'">合伙人招募</div>
     </div>
     <share-mask :shareMaskShow="shareMaskShow" :btn-text="btnText"></share-mask>
+    <notice :notice-show="noticeShow" :src="noticeImgSrc"></notice>
   </div>
 </template>
 
 <script>
 import ShareMask from "../../components/share-mask";
+import Notice from "../../components/notice"
 import LevelBg from '../../components/level-bg';
 import { mapState, mapActions } from "vuex";
 import utils from "../../utils/index.js";
+// import Notice from '../login/notice.vue';
 export default {
   name: "index",
-  components: { ShareMask, LevelBg },
+  components: { ShareMask, LevelBg, Notice },
   computed: {
     ...mapState(["userInfo"]),
   },
@@ -146,6 +149,8 @@ export default {
       ],
       bannerList: [], //
       walletInfo: {}, // 钱包信息
+      noticeShow: false,
+      noticeImgSrc: "",
       teamReward: {},
       teamLevel: {},
       shareMaskShow: false,
@@ -166,13 +171,17 @@ export default {
     },
     // 获取用户钱包及收入
     getWallet() {
-      this.$get("/api/wallet").then((res) => {
+      this.$get("/api/wallet", {
+        hideLoading: true
+      }).then((res) => {
         this.walletInfo = res.data;
       });
     },
     //获取团队业绩汇总
     getTeamReward() {
-      this.$get("/api/teamReward").then((res) => {
+      this.$get("/api/teamReward", {
+        hideLoading: true
+      }).then((res) => {
         this.teamReward = res.data;
         this.teamLevel = res.data.teamLevel
         this.$forceUpdate()
@@ -180,25 +189,34 @@ export default {
     },
     //获取奖励规则图片
     getRwardRuleImage() {
-      this.$get("/api/rewardRuleImage").then((res) => {
+      this.$get("/api/rewardRuleImage", {
+        hideLoading: true
+      }).then((res) => {
         this.rewardRuleImage = res.data.content;
       });
     },
     //获取奖励规则图片
     getWxFollowImage() {
-      this.$get("/api/wxFollowImage").then((res) => {
+      this.$get("/api/wxFollowImage", {
+        hideLoading: true
+      }).then((res) => {
         this.wxFollowImage = res.data.content;
       });
     },
     //获取团队总用户
     getTeamUser() {
-      this.$get("/api/teamUser").then((res) => {
+      this.$get("/api/teamUser", {
+        hideLoading: true
+      }).then((res) => {
         this.teamUserCount = res.data.teamUserCount;
       });
     },
     //邀请用户人数
     getInviteUserCount() {
-      this.$get("/api/inviteUserCount").then((res) => {
+      // this.$get("/api/inviteUserCount", {
+      this.$get("/api/applyCount", {
+        hideLoading: true
+      }).then((res) => {
         this.count = res.data.count
       });
     },
@@ -209,8 +227,31 @@ export default {
       }
       this.$router.push(url)
     },
+    //打开轮播图跳转的链接
     openUrl(url) {
       window.location.href = url
+    },
+    notice() {
+      let noticeId = localStorage.getItem("noticeId")
+      // if(!noticeId) return;
+      this.$get("/api/notice", {
+        hideLoading: true
+      }).then(res => {
+        let data = res.data;
+        if(data.id) {
+          if(noticeId == data.id) return
+          this.noticeImgSrc = data.image
+          this.noticeShow = true
+          localStorage.setItem("noticeId", data.id)
+        }
+      }).catch(err => {
+        if(err.id) {
+          if(noticeId == err.id) return
+          this.noticeImgSrc = err.image
+          this.noticeShow = true
+          localStorage.setItem("noticeId", err.id)
+        }
+      })
     }
   },
   created() {
@@ -222,6 +263,10 @@ export default {
     this.getTeamUser()
     this.getInviteUserCount()
     this.GET_USER_INFO()
+
+    setTimeout(() => {
+      this.notice()
+    }, 1000)
   },
 };
 </script>

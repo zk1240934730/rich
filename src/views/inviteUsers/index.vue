@@ -42,15 +42,15 @@
           </div>
         </template>
         <div class="user-item flex-row" v-for="item in listData" :key="item.id">
-          <img :src="item.invite_user.avatar && item.invite_user.avatar.indexOf('http') == -1 ? baseImgUrl + item.invite_user.avatar : item.invite_user.avatar" alt="">
+          <img :src="item.avatar && item.avatar.indexOf('http') == -1 ? baseImgUrl + item.avatar : item.avatar" alt="">
           <div class="f1">
             <div class="user-item-top flex-row flex-row-between flex-col-center">
-              <span class="f2">{{item.invite_user.mobile}}</span>
+              <span class="f2">{{item.mobile}}</span>
               <span class="f1">{{item.status | statusFormat}}</span>
             </div>
             <div class="user-item-btm flex-row flex-row-between flex-col-center">
-              <span>{{item.invite_user.nickname}}</span>
-              <span>{{item.invite_user.created_at}}</span>
+              <span>{{item.nickname}}</span>
+              <span>{{item.created_at}}</span>
             </div>
           </div>
         </div>
@@ -80,7 +80,8 @@ export default {
         status: 0
       },
       shareMaskShow: false,
-      ajaxUrl: '/api/inviteUserList',
+      // ajaxUrl: '/api/inviteUserList',
+      ajaxUrl: '/api/applyList',
       tabList: [
         {
           name: '全部',

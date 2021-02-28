@@ -15,7 +15,7 @@
             </div>
             <div class="f1">
               <p>团队业绩(元)</p>
-              <p>{{utils.numberFormat(teamReward.teamAllProfit, 2)}}</p>
+              <p>{{utils.numberFormat(teamReward.teamProfit, 2)}}</p>
             </div>
           </div>
           <div class="level-month-tips">还差{{utils.numberFormat(teamLevel.lack_money, 2)}}元可晋升{{teamLevel.next_level && teamLevel.next_level.level_name}}</div>

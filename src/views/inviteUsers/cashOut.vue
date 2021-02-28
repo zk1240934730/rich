@@ -29,11 +29,16 @@
             @click="cashOut"
             >立即提现</van-button
         >
+        <action-sheet v-model="actionShow" title="标题">
+            <div class="content">银行卡列表</div>
+        </action-sheet>
     </div>
 </template>
 
 <script>
+import { ActionSheet } from 'vant'
 export default {
+    components: { ActionSheet },
     data() {
         return {
             bankInfo: {
@@ -43,7 +48,8 @@ export default {
                 identity_card: "",
                 real_name: ""
             },
-            money: ''
+            money: '',
+            actionShow: false
         }
     },
     methods: {
@@ -51,7 +57,12 @@ export default {
             this.$get("/api/account", {
                 type: this.bankInfo.type
             }).then(res => {
-                Object.assign(this.bankInfo, res.data)
+                let data = res.data
+                if(Object.prototype.toString.apply(data).toLowerCase().indexOf('array') != -1) {
+                    Object.assign(this.bankInfo, data[0])
+                    return
+                }
+                Object.assign(this.bankInfo, data)
             })
         },
         cashOut() {
@@ -60,8 +71,8 @@ export default {
                 return
             }
             this.$post("/api/applyCash", {
-                account_type: this.bankInfo.type,
-                money: this.money
+                account_id: this.bankInfo.id,
+                money: parseFloat(this.money)
             }).then(() => {
                 this.$toast("申请提现成功，等待审核")
                 this.navigate("/records")

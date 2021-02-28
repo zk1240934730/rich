@@ -16,7 +16,12 @@ export default new Vuex.Store({
       localStorage.setItem("userInfo", JSON.stringify(userInfo))
     },
     SET_SHARE_TYPE(state, type) {
-      state.shareType = type
+      if(type == state.shareType) {
+        state.shareType = ""
+      }
+      setTimeout(() => {
+        state.shareType = type
+      }, 100)
     }
   },
   actions: {

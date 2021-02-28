@@ -107,6 +107,14 @@ const routes = [
     path: '/code',
     name: 'code',
     component: () => import(/* webpackChunkName: "rewardRules" */ '../views/login/code.vue')
+  },
+  {
+    path: '/apply',
+    name: 'apply',
+    meta: {
+      notLogin: true
+    },
+    component: () => import(/* webpackChunkName: "rewardRules" */ '../views/spread/apply.vue')
   }
 ]
 
@@ -115,9 +123,8 @@ const router = new VueRouter({
 })
 //判断是否存在token
 router.beforeEach((to, from, next) => {
-  console.log(to)
   NProgress.start()
-  if(to.path === '/notice') {
+  if(to.path === '/notice' || to.path ==='/apply' ) {
     next()
      // 结束Progress
     NProgress.done()
@@ -128,7 +135,7 @@ router.beforeEach((to, from, next) => {
     next("/code")
      // 结束Progress
      NProgress.done()
-  }  else if(to.path !== '/login' && !checkUserLoginInfo()) {
+  } else if(to.path !== '/login' && !checkUserLoginInfo()) {
     next("/login")
      // 结束Progress
     NProgress.done()

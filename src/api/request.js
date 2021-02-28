@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { Toast, Notify } from 'vant';
 import store from '../store/index'
+import router from "../router/index"
 axios.defaults.timeout = 60000;
 axios.defaults.baseURL = process.env.VUE_APP_LOGOUT_URL;
 axios.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded;charset=UTF-8";
@@ -38,12 +39,19 @@ axios.interceptors.response.use(response => {
         if (res.code === 0) {
             resolve(res)
         } else {
-            reject(res)
             Toast.fail(res.msg)
+            if(res.msg.indexOf("用户未登录") != -1) {
+                setTimeout(() => {
+                    store.commit("SET_USER_INFO", {})
+                    router.push("/login")
+                }, 1000);
+                return
+            }
+            reject(res)
+            
         }
     })
 }, error => {
-    console.log(error)
     //请求成功后关闭加载框
     if (loading) {
         loading.clear();
@@ -72,14 +80,7 @@ axios.interceptors.response.use(response => {
         case 401:
             Notify({ type: 'danger', message: '用户登陆过期，请重新登陆' });
             store.state.commit('COMMIT_TOKEN', '')
-            // setTimeout(() => {
-            //     router.replace({
-            //         path: "/login",
-            //         query: {
-            //             redirect: router.currentRoute.fullPath
-            //         }
-            //     });
-            // }, 1000);
+            
             break;
         case 400:
             Notify({ type: 'danger', message: '数据异常，详情请咨询聚保服务热线' });

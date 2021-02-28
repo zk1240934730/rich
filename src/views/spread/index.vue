@@ -22,7 +22,7 @@
               @click="previewImg(item, index)"
             />
           </div>
-          <div class="clipboard-btn" id="text-clipboard" :data-clipboard-text="item.content.replace(/<\/?.+?\/?>/g, '')" @click="copy('text-clipboard')">复制文案</div>
+          <div class="clipboard-btn" @click="copys(item.content)">复制文案</div>
         </div>
         <div class="loading-empty flex-col flex-col-center">
           <no-data v-if="!initLoading && !listData.length"></no-data>
@@ -32,7 +32,7 @@
     <van-image-preview v-model="show" :images="previewItem.images || []" @change="onChange" :startPosition="previewIndex"></van-image-preview>
     <div class="content-wrapper" v-if="show">
       <div class="content" v-html="previewItem.content"></div>
-      <div class="clipboard-btn" id="preview-clipboard" :data-clipboard-text="previewItem.content.replace(/<\/?.+?\/?>/g, '')" @click="copy('preview-clipboard')">复制文案</div>
+      <div class="clipboard-btn" @click="copys(previewItem.content)">复制文案</div>
     </div>
   </div>
 </template>
@@ -86,6 +86,16 @@ export default {
       this.previewItem = item
       this.previewIndex = index
       this.show = true
+    },
+    copys(data) {
+      const input = document.createElement('textarea')
+      // input.setAttribute('value', this.copyDoc) // 注意，这样写不行
+      input.value = data.replace(/<.>/g, '\n').replace(/<\/?.>/g, '').replace(/&nbsp;/g, "").trim().trim()
+      document.body.appendChild(input)
+      input.select()
+      document.execCommand('Copy')
+      document.body.removeChild(input)
+      this.$toast.success("复制成功")
     }
   },
   beforeMount() {
